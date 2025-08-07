@@ -31,6 +31,9 @@ from ios_automation.error_handling import (
     ErrorHandler, ErrorType, AccountState, get_error_handler,
     handle_automation_error, is_account_ready, mark_interaction_success
 )
+from ios_automation.account_execution_manager import (
+    AccountExecutionManager, AccountExecutionState, AccountExecutionInfo, get_execution_manager
+)
 
 # Get backend URL from environment
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://6c5138b3-5167-4119-a029-29051836ac8d.preview.emergentagent.com')
