@@ -465,7 +465,7 @@ const InteractionsLog = () => {
                   <span className="font-medium">{totalCount}</span> results
                 </p>
               </div>
-              {interactions.length === filters.limit && (
+              {(interactions || []).length === filters.limit && (
                 <button
                   onClick={loadMore}
                   className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
