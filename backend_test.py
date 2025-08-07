@@ -47,6 +47,7 @@ class Phase4BackendTester:
         self.db_manager = None
         self.dedup_service = None
         self.error_handler = None
+        self.execution_manager = None
         
         # Test data
         self.test_account_id = "test_account_123"
