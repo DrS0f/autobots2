@@ -671,16 +671,116 @@ async def cleanup_expired_interactions():
         logger.error(f"Error cleaning up interactions: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to cleanup interactions: {str(e)}")
 
+@api_router.get("/accounts/execution-states")
+async def get_account_execution_states():
+    """Get current execution state of all accounts"""
+    try:
+        execution_manager = get_execution_manager()
+        account_states = execution_manager.get_all_account_states()
+        
+        return {
+            "success": True,
+            "account_states": account_states,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting account execution states: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get account execution states: {str(e)}")
+
+@api_router.get("/accounts/execution-states/{account_id}")
+async def get_account_execution_state(account_id: str):
+    """Get execution state for a specific account"""
+    try:
+        execution_manager = get_execution_manager()
+        account_state = execution_manager.get_account_execution_state(account_id)
+        
+        if account_state:
+            return {
+                "success": True,
+                "account_state": account_state,
+                "updated_at": datetime.utcnow().isoformat()
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Account {account_id} not found or not tracked"
+            }
+        
+    except Exception as e:
+        logger.error(f"Error getting account execution state for {account_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get account execution state: {str(e)}")
+
+@api_router.get("/accounts/waiting-tasks")
+async def get_waiting_tasks():
+    """Get all tasks waiting for account availability"""
+    try:
+        execution_manager = get_execution_manager()
+        waiting_tasks = execution_manager.get_waiting_tasks_by_account()
+        
+        return {
+            "success": True,
+            "waiting_tasks_by_account": waiting_tasks,
+            "total_waiting_tasks": sum(len(tasks) for tasks in waiting_tasks.values()),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting waiting tasks: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get waiting tasks: {str(e)}")
+
+@api_router.get("/metrics/concurrency")
+async def get_concurrency_metrics():
+    """Get detailed concurrency control metrics"""
+    try:
+        execution_manager = get_execution_manager()
+        concurrency_metrics = execution_manager.get_metrics()
+        
+        return {
+            "success": True,
+            "concurrency_metrics": concurrency_metrics,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting concurrency metrics: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get concurrency metrics: {str(e)}")
+
 @api_router.get("/accounts/states")
 async def get_account_states():
     """Get current state of all accounts (active, cooldown, etc.)"""
     try:
         error_handler = get_error_handler()
-        account_states = error_handler.get_all_account_states()
+        execution_manager = get_execution_manager()
+        
+        # Get both error states and execution states
+        error_states = error_handler.get_all_account_states()
+        execution_states = execution_manager.get_all_account_states()
+        
+        # Merge the information
+        combined_states = {}
+        
+        # Start with execution states
+        for account_id, exec_state in execution_states.items():
+            combined_states[account_id] = {
+                **exec_state,
+                "error_state": error_states.get(account_id, {})
+            }
+        
+        # Add error states that don't have execution states
+        for account_id, error_state in error_states.items():
+            if account_id not in combined_states:
+                combined_states[account_id] = {
+                    "account_id": account_id,
+                    "state": "available",  # Default execution state
+                    "current_task_id": None,
+                    "waiting_tasks_count": 0,
+                    "error_state": error_state
+                }
         
         return {
             "success": True,
-            "account_states": account_states,
+            "account_states": combined_states,
             "updated_at": datetime.utcnow().isoformat()
         }
         
