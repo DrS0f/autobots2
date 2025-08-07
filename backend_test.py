@@ -675,7 +675,7 @@ async def main():
         # Run all test suites
         tester.test_license_service_core()
         tester.test_license_server_api()
-        tester.test_license_client_integration()
+        await tester.test_license_client_integration()
         tester.test_backend_license_integration()
         tester.test_task_creation_license_enforcement()
         tester.test_license_states_and_grace_period()
