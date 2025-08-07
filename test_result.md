@@ -209,7 +209,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "License Server Implementation"
+    - "Backend License Integration" 
+    - "License Management Panel"
+    - "Global License Banner"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
