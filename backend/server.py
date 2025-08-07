@@ -97,6 +97,7 @@ class SystemStats(BaseModel):
     queue_status: Dict[str, Any]
     active_tasks: Dict[str, Any]
     recent_results: List[Dict[str, Any]]
+    license_status: Optional[Dict[str, Any]] = None
 
 # Phase 4 Models
 class SystemSettingsUpdate(BaseModel):
