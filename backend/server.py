@@ -25,6 +25,7 @@ from ios_automation.engagement_task_manager import EngagementTaskManager
 from ios_automation.database_models import DatabaseManager, get_db_manager, init_database
 from ios_automation.deduplication_service import get_deduplication_service
 from ios_automation.error_handling import get_error_handler
+from ios_automation.account_execution_manager import get_execution_manager
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
