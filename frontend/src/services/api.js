@@ -146,6 +146,50 @@ export const apiClient = {
     return response.data;
   },
 
+  // Phase 4 endpoints
+  async getSettings() {
+    const response = await api.get('/settings');
+    return response.data;
+  },
+
+  async updateSettings(settings) {
+    const response = await api.put('/settings', settings);
+    return response.data;
+  },
+
+  async getLatestInteractions(params = {}) {
+    const response = await api.get('/interactions/latest', { params });
+    return response.data;
+  },
+
+  async getInteractionEvents(params = {}) {
+    const response = await api.get('/interactions/events', { params });
+    return response.data;
+  },
+
+  async exportInteractionEvents(params = {}) {
+    const response = await api.get('/interactions/export', { 
+      params, 
+      responseType: 'blob' 
+    });
+    return response.data;
+  },
+
+  async getMetrics() {
+    const response = await api.get('/metrics');
+    return response.data;
+  },
+
+  async getAccountStates() {
+    const response = await api.get('/accounts/states');
+    return response.data;
+  },
+
+  async cleanupExpiredInteractions() {
+    const response = await api.post('/interactions/cleanup');
+    return response.data;
+  },
+
   // Generic API call
   async get(endpoint) {
     const response = await api.get(endpoint);
