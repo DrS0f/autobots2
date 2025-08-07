@@ -191,18 +191,19 @@ COOLDOWN_MINUTES=45
 
 ---
 
-## 📋 REMAINING TASKS (4% Outstanding)
+## 📋 REMAINING TASKS (2% Outstanding)
 
-### Minor Enhancements
+### Minor Enhancements (Optional)
 1. **Per-Account Concurrency Control** (Optional)
    - Enforce single task per account
    - Queue management for account conflicts
    - Priority: Low (existing system handles this adequately)
 
-2. **Frontend Testing** (Pending User Decision)
-   - UI component validation
-   - Export functionality testing
-   - Settings persistence verification
+2. **Minor Frontend Polish** (Optional)
+   - Fix API 422 validation errors in backend interactions endpoints
+   - Resolve React controlled/uncontrolled input warnings
+   - Improve Settings panel input field responsiveness
+   - Priority: Very Low (cosmetic improvements only)
 
 ---
 
