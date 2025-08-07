@@ -1,6 +1,6 @@
 # Instagram Automation - Docker Deployment Guide
 
-Complete guide for deploying the iOS Instagram automation system using Docker containers.
+Complete guide for deploying the iOS Instagram automation system using Docker containers with optional SaaS licensing.
 
 ## Prerequisites
 
@@ -45,7 +45,19 @@ make env-dev
 nano .env  # Update passwords and settings
 ```
 
-### 2. Start Services
+### 2. License Configuration (Optional)
+For development, the system runs without license restrictions. For production licensing:
+
+```bash
+# Add license configuration to .env
+echo "LICENSE_KEY=your-license-key-here" >> .env
+echo "LICENSE_API_URL=http://localhost:8002" >> .env
+echo "LICENSE_VERIFY_INTERVAL=900" >> .env
+```
+
+See [Licensed Distribution Guide](./LICENSED_DISTRIBUTION.md) for complete licensing setup.
+
+### 3. Start Services
 ```bash
 # Start all services (backend + frontend + MongoDB)
 make up
