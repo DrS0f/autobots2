@@ -383,7 +383,9 @@ class TaskManager:
         try:
             # Create behavior engine for this task
             behavior_engine = HumanBehaviorEngine()
-            automator = InstagramAutomator(behavior_engine)
+            # Use device UDID as account identifier (or could be Instagram username)
+            account_id = device.udid
+            automator = InstagramAutomator(behavior_engine, account_id)
             
             # Execute task
             result_data = await automator.execute_task(task, device)
