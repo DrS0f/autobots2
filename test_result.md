@@ -189,17 +189,14 @@ backend:
   - task: "Per-Account Concurrency Control"
     implemented: true
     working: true
-    file: "backend/ios_automation/account_execution_manager.py"
+    file: "backend/ios_automation/account_execution_manager.py, task_manager.py, engagement_task_manager.py"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: false
     status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Enforce per-account concurrency = 1, cooldown management, skip events logging"
       - working: true
         agent: "testing"
-        comment: "✅ Per-account concurrency control system fully implemented and working! Successfully tested: AccountExecutionManager singleton initialization, account state tracking (AVAILABLE/RUNNING/COOLDOWN), per-account concurrency enforcement (max 1 task per account), waiting task queue with FIFO ordering, task completion and state transitions, metrics tracking, TaskManager integration, EngagementTaskManager integration, all new API endpoints (/api/accounts/execution-states, /api/accounts/waiting-tasks, /api/metrics/concurrency), and integration with error handling cooldown system. 48/49 tests passed (97.96% success rate). Only minor CSV export format issue unrelated to concurrency control."
+        comment: "Per-account concurrency control fully implemented and tested. 97.96% success rate (48/49 tests passed). Account execution manager working perfectly, task queuing with FIFO ordering implemented, all API endpoints functional. Only 1 minor CSV export header issue unrelated to concurrency control."
 
 frontend:
   - task: "Settings Panel Component"
