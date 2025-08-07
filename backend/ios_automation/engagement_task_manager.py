@@ -426,7 +426,9 @@ class EngagementTaskManager:
         try:
             # Create behavior engine for this task
             behavior_engine = HumanBehaviorEngine()
-            automator = EngagementAutomator(behavior_engine)
+            # Use device UDID as account identifier
+            account_id = device.udid
+            automator = EngagementAutomator(behavior_engine, account_id)
             
             # Execute engagement task
             result_data = await automator.execute_engagement_task(task, device)
