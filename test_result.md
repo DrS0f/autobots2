@@ -246,8 +246,6 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Integrated new tabs for Interaction Logs and Settings into main dashboard navigation"
-        agent: "main"
-        comment: "Added account states section showing Active/Cooldown status with countdown timers, error counts, recent activity"
 
 metadata:
   created_by: "main_agent"
