@@ -519,6 +519,8 @@ async def get_interaction_events(
         
         # Convert datetime objects to ISO strings for JSON serialization
         for event in events:
+            if '_id' in event:
+                del event['_id']  # Remove MongoDB ObjectId
             if 'ts' in event and isinstance(event['ts'], datetime):
                 event['ts'] = event['ts'].isoformat()
         
