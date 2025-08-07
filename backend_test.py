@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Test Suite for Phase 4: Session Integrity & Fail-Safe Crawler Behavior
-Tests all Phase 4 backend features including database models, deduplication, error handling, and API endpoints
+Backend Test Suite for Phase 5: SaaS Licensing & Kill-Switch
+Tests all Phase 5 backend features including license server, license client integration, and API endpoints
 """
 
 import asyncio
@@ -14,11 +14,14 @@ from typing import Dict, List, Any
 import requests
 import pytest
 from motor.motor_asyncio import AsyncIOMotorClient
+import subprocess
+import signal
 
 # Add backend to path
 sys.path.append('/app/backend')
+sys.path.append('/app/licensing')
 
-# Import Phase 4 modules
+# Import Phase 4 modules (still needed for integration testing)
 from ios_automation.database_models import (
     DatabaseManager, InteractionEvent, LatestInteraction, 
     InteractionAction, InteractionStatus, get_db_manager, init_database
@@ -35,9 +38,15 @@ from ios_automation.account_execution_manager import (
     AccountExecutionManager, AccountExecutionState, AccountExecutionInfo, get_execution_manager
 )
 
+# Import Phase 5 licensing modules
+from license_client import LicenseClient, LicenseStatus
+from licensing.models import LicenseRequest, LicenseResponse, VerifyRequest, VerifyResponse
+from licensing.license_service import LicenseService
+
 # Get backend URL from environment
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://9b89d9f1-548e-4699-8ffa-55b25cb47e22.preview.emergentagent.com')
 API_BASE_URL = f"{BACKEND_URL}/api"
+LICENSE_SERVER_URL = "http://localhost:8002"
 
 class Phase4BackendTester:
     """Comprehensive tester for Phase 4 backend features"""
