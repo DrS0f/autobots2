@@ -63,6 +63,7 @@ const Dashboard = () => {
 
   const tabs = [
     { id: 'tasks', name: 'Task Management', icon: QueueListIcon },
+    { id: 'engagement', name: 'Engagement Crawler', icon: ChatBubbleLeftRightIcon },
     { id: 'devices', name: 'Devices', icon: DevicePhoneMobileIcon },
     { id: 'monitoring', name: 'System Monitor', icon: ChartBarIcon },
     { id: 'history', name: 'Task History', icon: ClockIcon },
