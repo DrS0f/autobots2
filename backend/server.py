@@ -27,6 +27,9 @@ from ios_automation.deduplication_service import get_deduplication_service
 from ios_automation.error_handling import get_error_handler
 from ios_automation.account_execution_manager import get_execution_manager
 
+# Import license client
+from license_client import license_client
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
