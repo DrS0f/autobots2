@@ -894,6 +894,10 @@ async def shutdown_event():
         error_handler = get_error_handler()
         await error_handler.cleanup_old_states()
         
+        # Stop license client
+        await license_client.stop()
+        logger.info("License client stopped")
+        
         # Close database connection
         db_manager = get_db_manager()
         await db_manager.close()
