@@ -9,7 +9,8 @@ import {
   XMarkIcon,
   ChatBubbleLeftRightIcon,
   CogIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  KeyIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
