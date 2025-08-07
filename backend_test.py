@@ -371,7 +371,7 @@ class Phase5BackendTester:
         except Exception as e:
             self.log_test_result("Admin Auth Check", False, error=str(e))
     
-    def test_license_client_integration(self):
+    async def test_license_client_integration(self):
         """Test license client integration"""
         print("\n🔗 Testing License Client Integration...")
         
@@ -436,16 +436,12 @@ class Phase5BackendTester:
                     client = LicenseClient()
                     
                     # Perform immediate verification
-                    async def verify_license_async():
-                        await client._verify_now()
-                        return client.status
+                    await client._verify_now()
                     
-                    status = asyncio.run(verify_license_async())
-                    
-                    if status == LicenseStatus.OK:
+                    if client.status == LicenseStatus.OK:
                         self.log_test_result("License Client - Valid Key", True, "Client correctly validated license")
                     else:
-                        self.log_test_result("License Client - Valid Key", False, error=f"Wrong status: {status}")
+                        self.log_test_result("License Client - Valid Key", False, error=f"Wrong status: {client.status}")
             except Exception as e:
                 self.log_test_result("License Client - Valid Key", False, error=str(e))
     
