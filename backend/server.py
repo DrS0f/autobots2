@@ -382,6 +382,15 @@ async def get_dashboard_stats():
     """Get comprehensive system statistics for dashboard"""
     try:
         stats = await task_manager.get_dashboard_stats()
+        
+        # Add license status to dashboard stats
+        try:
+            license_status = license_client.get_status()
+            stats["license_status"] = license_status
+        except Exception as e:
+            logger.warning(f"Failed to get license status for dashboard: {e}")
+            stats["license_status"] = None
+        
         return SystemStats(**stats)
     except Exception as e:
         logger.error(f"Failed to get dashboard stats: {e}")
