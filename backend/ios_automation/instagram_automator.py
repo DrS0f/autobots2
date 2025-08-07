@@ -82,6 +82,16 @@ class InstagramAutomator:
         if not device.driver:
             return {"success": False, "error": "Device driver not available"}
         
+        # Check if account is available (not in cooldown)
+        account_available, availability_reason = await is_account_ready(self.account_id)
+        if not account_available:
+            logger.warning(f"Account {self.account_id} not available: {availability_reason}")
+            return {
+                "success": False, 
+                "error": f"Account unavailable: {availability_reason}",
+                "task_id": task.task_id
+            }
+        
         task.status = "running"
         task.started_at = time.time()
         task.completed_actions = []
