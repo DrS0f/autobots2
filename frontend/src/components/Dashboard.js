@@ -16,6 +16,8 @@ import DeviceManagementPanel from './DeviceManagementPanel';
 import SystemMonitoring from './SystemMonitoring';
 import TaskHistory from './TaskHistory';
 import EngagementCrawler from './EngagementCrawler';
+import SettingsPanel from './SettingsPanel';
+import InteractionsLog from './InteractionsLog';
 import { apiClient } from '../services/api';
 
 const Dashboard = () => {
