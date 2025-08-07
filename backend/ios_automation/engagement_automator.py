@@ -1,6 +1,7 @@
 """
 Engagement-Based Instagram Automation Engine
 Handles crawling users from posts and performing engagement actions (follow, like, comment)
+Enhanced with Phase 4: Deduplication and advanced error handling
 """
 
 import asyncio
@@ -18,6 +19,8 @@ from appium.webdriver.common.appiumby import AppiumBy
 
 from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile, GestureType
 from .device_manager import IOSDevice
+from .deduplication_service import should_engage_user, record_successful_engagement, record_failed_engagement, InteractionStatus
+from .error_handling import handle_automation_error, is_account_ready, mark_interaction_success
 
 logger = logging.getLogger(__name__)
 
