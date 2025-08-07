@@ -33,6 +33,7 @@ function App() {
         }}
       />
       <Router>
+        <LicenseBanner />
         <Routes>
           <Route path="/" element={<Dashboard />} />
         </Routes>
