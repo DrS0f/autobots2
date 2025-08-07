@@ -471,8 +471,30 @@ class EngagementAutomator:
             return False
 
     async def _follow_user(self, driver, username: str, task: EngagementTask) -> bool:
-        """Follow the user if not already following"""
+        """Follow the user if not already following (with deduplication)"""
+        action_start = time.time()
+        
         try:
+            # Check deduplication first
+            should_engage, reason = await should_engage_user(
+                account_id=self.account_id,
+                target_username=username,
+                action="follow",
+                task_id=task.task_id,
+                device_id=task.device_udid
+            )
+            
+            if not should_engage:
+                logger.info(f"Skipping follow for @{username}: {reason}")
+                task.completed_actions.append({
+                    "action": "follow_user",
+                    "username": username,
+                    "timestamp": time.time(),
+                    "success": False,
+                    "reason": reason
+                })
+                return False
+            
             follow_button = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((AppiumBy.XPATH, self.selectors['follow_button']))
             )
@@ -480,6 +502,23 @@ class EngagementAutomator:
             await self.behavior_engine.pre_action_delay(GestureType.TAP)
             follow_button.click()
             await asyncio.sleep(random.uniform(1, 2))
+            
+            # Calculate latency
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            # Record successful follow
+            await record_successful_engagement(
+                account_id=self.account_id,
+                target_username=username,
+                action="follow",
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms,
+                metadata={"method": "engagement_follow", "source": "crawled_user"}
+            )
+            
+            # Mark account interaction as successful
+            await mark_interaction_success(self.account_id)
             
             logger.info(f"Successfully followed @{username}")
             
@@ -497,11 +536,60 @@ class EngagementAutomator:
             try:
                 following_button = driver.find_element(AppiumBy.XPATH, self.selectors['following_button'])
                 logger.info(f"Already following @{username}")
+                
+                # Record as dedupe hit since we're already following
+                latency_ms = int((time.time() - action_start) * 1000)
+                await record_failed_engagement(
+                    account_id=self.account_id,
+                    target_username=username,
+                    action="follow",
+                    status=InteractionStatus.DEDUPE_HIT,
+                    reason="already_following",
+                    task_id=task.task_id,
+                    device_id=task.device_udid,
+                    latency_ms=latency_ms
+                )
+                
                 return False
             except NoSuchElementException:
+                latency_ms = int((time.time() - action_start) * 1000)
+                await record_failed_engagement(
+                    account_id=self.account_id,
+                    target_username=username,
+                    action="follow",
+                    status=InteractionStatus.FAILED,
+                    reason="follow_button_not_found",
+                    task_id=task.task_id,
+                    device_id=task.device_udid,
+                    latency_ms=latency_ms
+                )
+                
                 logger.warning(f"Could not find follow button for @{username}")
                 return False
         except Exception as e:
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            # Handle error with advanced error handling
+            should_retry, delay, error_reason = await handle_automation_error(
+                error_message=str(e),
+                account_id=self.account_id,
+                device_id=task.device_udid,
+                task_id=task.task_id,
+                element_context="follow_button",
+                metadata={"action": "follow_user", "target": username, "method": "engagement"}
+            )
+            
+            await record_failed_engagement(
+                account_id=self.account_id,
+                target_username=username,
+                action="follow",
+                status=InteractionStatus.FAILED,
+                reason=error_reason,
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms
+            )
+            
             logger.error(f"Error following @{username}: {e}")
             return False
 
