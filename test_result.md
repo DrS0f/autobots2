@@ -164,6 +164,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Most API endpoints working correctly. Successfully tested: GET/PUT /api/settings (configuration management), GET /api/metrics (comprehensive dashboard metrics), GET /api/accounts/states (account status monitoring), POST /api/interactions/cleanup. Minor: 3 endpoints have ObjectId serialization issues (interactions/events, interactions/export JSON) - easily fixable but core functionality works."
+      - working: true
+        agent: "main"
+        comment: "Added endpoints: GET/PUT /api/settings, GET /api/interactions/events, GET /api/interactions/export, GET /api/metrics, GET /api/accounts/states - all Phase 4 API endpoints implemented. Fixed ObjectId serialization issues."
 
   - task: "Integration with Existing Automators"
     implemented: true
