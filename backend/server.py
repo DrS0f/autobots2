@@ -584,8 +584,10 @@ async def export_interaction_events(
             )
         
         elif format.lower() == "json":
-            # Convert datetime objects for JSON
+            # Convert datetime objects for JSON and remove ObjectIds
             for event in events:
+                if '_id' in event:
+                    del event['_id']  # Remove MongoDB ObjectId
                 if 'ts' in event and isinstance(event['ts'], datetime):
                     event['ts'] = event['ts'].isoformat()
             
