@@ -16,7 +16,71 @@ import json
 from .engagement_automator import EngagementAutomator, EngagementTask, EngagementAction
 from .device_manager import IOSDeviceManager, IOSDevice, DeviceStatus
 from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile
-from .task_manager import TaskPriority, TaskQueue
+from .task_manager import TaskPriority
+
+class EngagementTaskQueue:
+    """FIFO task queue specifically for engagement tasks"""
+    
+    def __init__(self):
+        self.tasks: List[EngagementTask] = []
+        self.lock = asyncio.Lock()
+    
+    async def add_task(self, task: EngagementTask, priority: TaskPriority = TaskPriority.NORMAL):
+        """Add engagement task to queue with priority"""
+        async with self.lock:
+            task.priority = priority
+            
+            # Insert based on priority
+            inserted = False
+            for i, existing_task in enumerate(self.tasks):
+                if priority.value > getattr(existing_task, 'priority', TaskPriority.NORMAL).value:
+                    self.tasks.insert(i, task)
+                    inserted = True
+                    break
+            
+            if not inserted:
+                self.tasks.append(task)
+            
+            logger.info(f"Added engagement task {task.task_id} to queue (priority: {priority.name})")
+    
+    async def get_next_task(self) -> Optional[EngagementTask]:
+        """Get next engagement task from queue"""
+        async with self.lock:
+            if self.tasks:
+                task = self.tasks.pop(0)
+                task.status = "running"
+                return task
+            return None
+    
+    async def remove_task(self, task_id: str) -> bool:
+        """Remove engagement task from queue"""
+        async with self.lock:
+            for i, task in enumerate(self.tasks):
+                if task.task_id == task_id:
+                    self.tasks.pop(i)
+                    return True
+            return False
+    
+    def get_queue_status(self) -> dict:
+        """Get current engagement queue status"""
+        return {
+            "total_tasks": len(self.tasks),
+            "tasks_by_priority": {
+                priority.name: len([t for t in self.tasks 
+                                   if getattr(t, 'priority', TaskPriority.NORMAL) == priority])
+                for priority in TaskPriority
+            },
+            "tasks": [
+                {
+                    "task_id": task.task_id,
+                    "target_pages": task.target_pages,
+                    "priority": getattr(task, 'priority', TaskPriority.NORMAL).name,
+                    "status": task.status,
+                    "created_at": getattr(task, 'created_at', None)
+                }
+                for task in self.tasks
+            ]
+        }
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +103,7 @@ class EngagementTaskManager:
     
     def __init__(self, device_manager: IOSDeviceManager):
         self.device_manager = device_manager
-        self.engagement_queue = TaskQueue()
+        self.engagement_queue = EngagementTaskQueue()
         self.engagement_automator = EngagementAutomator()
         
         # Task tracking
