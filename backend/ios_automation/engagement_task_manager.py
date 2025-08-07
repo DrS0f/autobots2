@@ -16,6 +16,7 @@ import json
 from .engagement_automator import EngagementAutomator, EngagementTask, EngagementAction
 from .device_manager import IOSDeviceManager, IOSDevice, DeviceStatus
 from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile
+from .account_execution_manager import get_execution_manager, AccountExecutionState
 from .task_manager import TaskPriority
 
 class EngagementTaskQueue:
