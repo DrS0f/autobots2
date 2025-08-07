@@ -275,10 +275,10 @@ const SettingsPanel = () => {
           <div className="bg-gray-50 p-4 rounded-md">
             <h5 className="text-sm font-medium text-gray-900 mb-2">Configuration Summary</h5>
             <div className="text-sm text-gray-600 space-y-1">
-              <p>• Users can be re-engaged after <strong>{settings.reengagement_days} days</strong></p>
-              <p>• Rate limit backoff: <strong>{settings.rate_limit_steps.map(s => formatDuration(s)).join(' → ')}</strong></p>
-              <p>• Account cooldown after <strong>{settings.cooldown_after_consecutive} consecutive errors</strong></p>
-              <p>• Cooldown duration: <strong>{formatDuration(settings.cooldown_minutes * 60)}</strong></p>
+              <p>• Users can be re-engaged after <strong>{settings.reengagement_days || 30} days</strong></p>
+              <p>• Rate limit backoff: <strong>{(settings.rate_limit_steps || []).map(s => formatDuration(s)).join(' → ')}</strong></p>
+              <p>• Account cooldown after <strong>{settings.cooldown_after_consecutive || 3} consecutive errors</strong></p>
+              <p>• Cooldown duration: <strong>{formatDuration((settings.cooldown_minutes || 45) * 60)}</strong></p>
             </div>
           </div>
         </div>
