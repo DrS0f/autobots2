@@ -198,6 +198,10 @@ async def cleanup_device(udid: str):
 @api_router.post("/tasks/create", response_model=TaskResponse)
 async def create_automation_task(request: TaskCreateRequest):
     """Create a new Instagram automation task"""
+    # Check license first
+    if not license_client.is_licensed():
+        raise HTTPException(status_code=403, detail="License required: System is locked due to invalid or expired license")
+    
     try:
         # Validate priority
         priority_map = {
