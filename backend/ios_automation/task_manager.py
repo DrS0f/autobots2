@@ -16,6 +16,7 @@ import json
 from .instagram_automator import InstagramAutomator, InstagramTask, InstagramAction
 from .device_manager import IOSDeviceManager, IOSDevice, DeviceStatus
 from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile
+from .account_execution_manager import get_execution_manager, AccountExecutionState
 
 logger = logging.getLogger(__name__)
 
