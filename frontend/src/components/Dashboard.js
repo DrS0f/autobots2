@@ -6,7 +6,8 @@ import {
   ClockIcon,
   PlayIcon,
   StopIcon,
-  XMarkIcon
+  XMarkIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
