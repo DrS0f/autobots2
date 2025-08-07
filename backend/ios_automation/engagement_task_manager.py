@@ -104,6 +104,7 @@ class EngagementTaskManager:
     
     def __init__(self, device_manager: IOSDeviceManager):
         self.device_manager = device_manager
+        self.execution_manager = get_execution_manager()  # Per-account concurrency control
         self.engagement_queue = EngagementTaskQueue()
         self.engagement_automator = EngagementAutomator()
         
@@ -127,6 +128,7 @@ class EngagementTaskManager:
             "total_likes_given": 0,
             "total_comments_posted": 0,
             "average_task_duration": 0,
+            "queued_waiting_on_account": 0,  # New metric for concurrency control
             "engagement_uptime_start": time.time()
         }
         
