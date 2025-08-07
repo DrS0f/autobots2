@@ -203,5 +203,15 @@ class LicenseClient:
         return self.get_status()
 
 
-# Global license client instance
-license_client = LicenseClient()
+# Global license client instance (lazy initialization)
+_license_client = None
+
+def get_license_client():
+    """Get the global license client instance (lazy initialization)"""
+    global _license_client
+    if _license_client is None:
+        _license_client = LicenseClient()
+    return _license_client
+
+# For backward compatibility
+license_client = get_license_client()
