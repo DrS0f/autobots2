@@ -442,7 +442,7 @@ class Phase5BackendTester:
                     
                     status = asyncio.run(verify_license_async())
                     
-                    if client.status == LicenseStatus.OK:
+                    if status == LicenseStatus.OK:
                         self.log_test_result("License Client - Valid Key", True, "Client correctly validated license")
                     else:
                         self.log_test_result("License Client - Valid Key", False, error=f"Wrong status: {client.status}")
