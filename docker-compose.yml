@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: instagram_automation_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${DB_NAME:-instagram_automation}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - instagram_automation_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: production
+    container_name: instagram_automation_backend
+    restart: unless-stopped
+    environment:
+      - MONGO_URL=mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password}@mongo:27017/${DB_NAME:-instagram_automation}?authSource=admin
+      - DB_NAME=${DB_NAME:-instagram_automation}
+      - REENGAGEMENT_DAYS_DEFAULT=${REENGAGEMENT_DAYS_DEFAULT:-30}
+      - RATE_LIMIT_STEPS=${RATE_LIMIT_STEPS:-60,120,300,600}
+      - COOLDOWN_AFTER_CONSECUTIVE=${COOLDOWN_AFTER_CONSECUTIVE:-3}
+      - COOLDOWN_MINUTES=${COOLDOWN_MINUTES:-45}
+      - PYTHONPATH=/app/backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend:ro
+      - backend_logs:/app/logs
+    networks:
+      - instagram_automation_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    entrypoint: ["/app/scripts/wait-for-mongo.sh"]
+    command: ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: production
+    container_name: instagram_automation_frontend
+    restart: unless-stopped
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8000
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+    networks:
+      - instagram_automation_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  init:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: development
+    container_name: instagram_automation_init
+    environment:
+      - MONGO_URL=mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password}@mongo:27017/${DB_NAME:-instagram_automation}?authSource=admin
+      - DB_NAME=${DB_NAME:-instagram_automation}
+      - PYTHONPATH=/app/backend
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend:ro
+      - ./scripts:/app/scripts:ro
+    networks:
+      - instagram_automation_network
+    profiles:
+      - init
+    command: ["python", "/app/scripts/init_db.py"]
+
+volumes:
+  mongo_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+networks:
+  instagram_automation_network:
+    driver: bridge
+
+# Development override
+# Use: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# This file can be extended with docker-compose.dev.yml for development-specific settings
