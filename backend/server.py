@@ -840,6 +840,10 @@ async def startup_event():
     logger.info("Starting iOS Instagram Automation API")
     
     try:
+        # Start license client first
+        await license_client.start()
+        logger.info("License client initialized")
+        
         # Initialize Phase 4 database
         await init_database()
         logger.info("Phase 4 database initialized")
