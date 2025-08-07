@@ -865,7 +865,9 @@ async def main():
         await tester.test_database_models()
         await tester.test_deduplication_service()
         await tester.test_error_handling()
+        await tester.test_concurrency_control_system()  # New concurrency tests
         tester.test_api_endpoints()
+        tester.test_concurrency_api_endpoints()  # New concurrency API tests
         tester.test_integration_points()
         
     finally:
