@@ -353,7 +353,7 @@ class EngagementTaskManager:
         }
 
     async def _engagement_worker_loop(self, worker_id: str):
-        """Main worker loop for processing engagement tasks"""
+        """Main worker loop for processing engagement tasks with per-account concurrency control"""
         logger.info(f"Engagement worker {worker_id} started")
         
         while self.engagement_running:
@@ -373,17 +373,50 @@ class EngagementTaskManager:
                     await asyncio.sleep(10)  # Wait longer for devices
                     continue
                 
+                # Use device UDID as account identifier for concurrency control
+                account_id = device.udid
+                
+                # Check if account can execute a new task (per-account concurrency control)
+                can_execute = self.execution_manager.start_task_execution(
+                    account_id=account_id,
+                    task_id=task.task_id,
+                    device_id=device.udid,
+                    task_type="engagement"
+                )
+                
+                if not can_execute:
+                    # Account is busy or in cooldown, put task back and try another
+                    task.status = "waiting"
+                    await self.engagement_queue.add_task(task)
+                    await self.device_manager.release_device(device.udid)
+                    
+                    # Update waiting metrics
+                    self.engagement_stats["queued_waiting_on_account"] = len(
+                        self.execution_manager.get_waiting_tasks_by_account()
+                    )
+                    
+                    logger.info(f"Engagement task {task.task_id} waiting for account {account_id} availability")
+                    await asyncio.sleep(3)  # Short wait before trying next task
+                    continue
+                
                 # Assign device to task
                 task.device_udid = device.udid
                 self.active_engagement_tasks[task.task_id] = task
                 
-                logger.info(f"Engagement worker {worker_id} starting task {task.task_id} on device {device.name}")
+                logger.info(f"Engagement worker {worker_id} starting task {task.task_id} on device {device.name} (account: {account_id})")
                 
                 # Trigger callbacks
                 await self._trigger_engagement_callbacks("engagement_task_started", task)
                 
                 # Execute engagement task
                 result = await self._execute_engagement_task_with_logging(task, device, worker_id)
+                
+                # Complete task execution in execution manager
+                next_waiting_task = self.execution_manager.complete_task_execution(
+                    account_id=account_id,
+                    task_id=task.task_id,
+                    success=result.success
+                )
                 
                 # Store result
                 self.engagement_results[task.task_id] = result
@@ -400,6 +433,15 @@ class EngagementTaskManager:
                     self.engagement_stats["total_tasks_failed"] += 1
                     await self._trigger_engagement_callbacks("engagement_task_failed", task, result)
                 
+                # Update waiting metrics
+                self.engagement_stats["queued_waiting_on_account"] = len(
+                    self.execution_manager.get_waiting_tasks_by_account()
+                )
+                
+                # If there's a waiting task for this account, prioritize it
+                if next_waiting_task:
+                    logger.info(f"Account {account_id} has waiting engagement task {next_waiting_task}, will be prioritized")
+                
                 # Release device
                 await self.device_manager.release_device(device.udid)
                 
@@ -407,7 +449,7 @@ class EngagementTaskManager:
                 if task.task_id in self.active_engagement_tasks:
                     del self.active_engagement_tasks[task.task_id]
                 
-                logger.info(f"Engagement worker {worker_id} completed task {task.task_id}")
+                logger.info(f"Engagement worker {worker_id} completed task {task.task_id} for account {account_id}")
                 
             except asyncio.CancelledError:
                 logger.info(f"Engagement worker {worker_id} cancelled")
