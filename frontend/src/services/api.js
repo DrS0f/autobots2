@@ -105,6 +105,47 @@ export const apiClient = {
     return response.data;
   },
 
+  // Engagement endpoints
+  async createEngagementTask(taskData) {
+    const response = await api.post('/engagement-task', taskData);
+    return response.data;
+  },
+
+  async getEngagementTaskStatus(taskId) {
+    const response = await api.get(`/engagement-status/${taskId}`);
+    return response.data;
+  },
+
+  async getEngagementDashboardStats() {
+    const response = await api.get('/engagement-status');
+    return response.data;
+  },
+
+  async getEngagementHistory() {
+    const response = await api.get('/engagement-history');
+    return response.data;
+  },
+
+  async getEngagementTaskLogs(taskId) {
+    const response = await api.get(`/engagement-task/${taskId}/logs`);
+    return response.data;
+  },
+
+  async cancelEngagementTask(taskId) {
+    const response = await api.delete(`/engagement-task/${taskId}/cancel`);
+    return response.data;
+  },
+
+  async startEngagementSystem() {
+    const response = await api.post('/engagement/start');
+    return response.data;
+  },
+
+  async stopEngagementSystem() {
+    const response = await api.post('/engagement/stop');
+    return response.data;
+  },
+
   // Generic API call
   async get(endpoint) {
     const response = await api.get(endpoint);
