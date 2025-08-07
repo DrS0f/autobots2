@@ -273,11 +273,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Settings Panel Component"
-    - "Interactions Log Component"
-  stuck_tasks:
-    - "Settings Panel Component"
-    - "Interactions Log Component"
+    - "Account State Indicators"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
