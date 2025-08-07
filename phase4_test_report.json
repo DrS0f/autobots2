@@ -1,0 +1,246 @@
+{
+  "total_tests": 34,
+  "passed_tests": 29,
+  "failed_tests": 5,
+  "success_rate": 85.29411764705883,
+  "results": [
+    {
+      "test_name": "Database Indexes Creation",
+      "success": true,
+      "details": "All indexes created successfully",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.497840"
+    },
+    {
+      "test_name": "Record Interaction Event",
+      "success": true,
+      "details": "Event recorded successfully",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.498745"
+    },
+    {
+      "test_name": "Upsert Latest Interaction",
+      "success": true,
+      "details": "Latest interaction upserted",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.499996"
+    },
+    {
+      "test_name": "Check Interaction Exists",
+      "success": false,
+      "details": "",
+      "error": "Expected interaction not found",
+      "timestamp": "2025-08-07T19:39:33.501041"
+    },
+    {
+      "test_name": "Query Interaction Events",
+      "success": true,
+      "details": "Retrieved 1 events",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.502105"
+    },
+    {
+      "test_name": "Get Interaction Metrics",
+      "success": true,
+      "details": "Metrics: 1 total",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.503284"
+    },
+    {
+      "test_name": "Get Settings",
+      "success": true,
+      "details": "Default reengagement: 30 days",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.503979"
+    },
+    {
+      "test_name": "Update Settings",
+      "success": true,
+      "details": "Settings updated successfully",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.516911"
+    },
+    {
+      "test_name": "Should Engage - New User",
+      "success": true,
+      "details": "Allowed: allowed - no recent interaction found",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.517956"
+    },
+    {
+      "test_name": "Record Successful Interaction",
+      "success": true,
+      "details": "Interaction recorded",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.519897"
+    },
+    {
+      "test_name": "Should Engage - Existing User",
+      "success": false,
+      "details": "",
+      "error": "Should be blocked: allowed - no recent interaction found",
+      "timestamp": "2025-08-07T19:39:33.521024"
+    },
+    {
+      "test_name": "Record Failed Interaction",
+      "success": true,
+      "details": "Failed interaction recorded",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.522743"
+    },
+    {
+      "test_name": "Bulk Check Users",
+      "success": true,
+      "details": "Checked 3 users, 0 blocked",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.524313"
+    },
+    {
+      "test_name": "Get User History",
+      "success": true,
+      "details": "Retrieved 1 history entries",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525471"
+    },
+    {
+      "test_name": "Get Service Stats",
+      "success": true,
+      "details": "Total checks: 5",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525498"
+    },
+    {
+      "test_name": "Error Type Detection - Rate Limited",
+      "success": true,
+      "details": "Correctly detected rate limit",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525518"
+    },
+    {
+      "test_name": "Error Type Detection - Private Account",
+      "success": true,
+      "details": "Correctly detected private account",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525532"
+    },
+    {
+      "test_name": "Handle Rate Limit Error",
+      "success": true,
+      "details": "Retry in 51s: rate_limit_backoff - step 1",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525587"
+    },
+    {
+      "test_name": "Handle Private Account Error",
+      "success": true,
+      "details": "Correctly no retry: private_account - cannot access",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525604"
+    },
+    {
+      "test_name": "Account Availability Check",
+      "success": true,
+      "details": "Account available: account_ready",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525612"
+    },
+    {
+      "test_name": "Cooldown Trigger",
+      "success": true,
+      "details": "Account in cooldown: cooldown_active - 2699s remaining",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525817"
+    },
+    {
+      "test_name": "Reset Account Errors",
+      "success": true,
+      "details": "Errors reset successfully",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525834"
+    },
+    {
+      "test_name": "Get Error Stats",
+      "success": true,
+      "details": "Total errors: 6",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.525846"
+    },
+    {
+      "test_name": "GET /api/settings",
+      "success": true,
+      "details": "Retrieved settings: 45 days",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.614134"
+    },
+    {
+      "test_name": "PUT /api/settings",
+      "success": true,
+      "details": "Settings updated successfully",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.632693"
+    },
+    {
+      "test_name": "GET /api/interactions/events",
+      "success": false,
+      "details": "",
+      "error": "HTTP 500",
+      "timestamp": "2025-08-07T19:39:33.652274"
+    },
+    {
+      "test_name": "GET /api/interactions/export (CSV)",
+      "success": false,
+      "details": "",
+      "error": "Not CSV format",
+      "timestamp": "2025-08-07T19:39:33.710492"
+    },
+    {
+      "test_name": "GET /api/interactions/export (JSON)",
+      "success": false,
+      "details": "",
+      "error": "HTTP 500",
+      "timestamp": "2025-08-07T19:39:33.735843"
+    },
+    {
+      "test_name": "GET /api/metrics",
+      "success": true,
+      "details": "Metrics retrieved: interactions, deduplication, errors",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.753961"
+    },
+    {
+      "test_name": "GET /api/accounts/states",
+      "success": true,
+      "details": "Account states: 0 accounts",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.774213"
+    },
+    {
+      "test_name": "POST /api/interactions/cleanup",
+      "success": true,
+      "details": "Cleaned up 0 expired interaction records",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.796082"
+    },
+    {
+      "test_name": "API Connectivity",
+      "success": true,
+      "details": "API is running and accessible",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.814821"
+    },
+    {
+      "test_name": "System Health Check",
+      "success": true,
+      "details": "System status: warning",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.834080"
+    },
+    {
+      "test_name": "Dashboard Stats Integration",
+      "success": true,
+      "details": "Dashboard stats accessible",
+      "error": "",
+      "timestamp": "2025-08-07T19:39:33.850315"
+    }
+  ]
+}
