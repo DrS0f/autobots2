@@ -268,6 +268,103 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
         )}
       </div>
 
+      {/* Account States Section */}
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-sm font-medium text-gray-900">Account States</h3>
+          {loadingStates && (
+            <div className="text-xs text-gray-500">Refreshing...</div>
+          )}
+        </div>
+        
+        {Object.keys(accountStates).length === 0 ? (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p className="text-sm text-gray-500 text-center">
+              No account states available. Start some automation tasks to see account status.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.entries(accountStates).map(([accountId, state]) => (
+              <div 
+                key={accountId} 
+                className={`border rounded-lg p-4 ${
+                  state.state === 'cooldown' 
+                    ? 'border-red-200 bg-red-50' 
+                    : state.consecutive_errors > 0
+                    ? 'border-yellow-200 bg-yellow-50'
+                    : 'border-green-200 bg-green-50'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    {state.state === 'cooldown' ? (
+                      <FireIcon className="h-5 w-5 text-red-500" />
+                    ) : state.consecutive_errors > 0 ? (
+                      <ShieldExclamationIcon className="h-5 w-5 text-yellow-500" />
+                    ) : (
+                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                    )}
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-sm">
+                        {accountId.length > 20 ? `${accountId.substring(0, 20)}...` : accountId}
+                      </h4>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    state.state === 'cooldown' 
+                      ? 'bg-red-100 text-red-800'
+                      : state.consecutive_errors > 0
+                      ? 'bg-yellow-100 text-yellow-800'  
+                      : 'bg-green-100 text-green-800'
+                  }`}>
+                    {state.state === 'cooldown' ? 'COOLDOWN' : 
+                     state.consecutive_errors > 0 ? 'WARNINGS' : 'ACTIVE'}
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-xs text-gray-600">
+                  {state.state === 'cooldown' && state.cooldown_remaining > 0 && (
+                    <div className="flex items-center text-red-600">
+                      <ClockIcon className="h-3 w-3 mr-1" />
+                      <span>Cooldown: {Math.floor(state.cooldown_remaining / 60)}m {state.cooldown_remaining % 60}s</span>
+                    </div>
+                  )}
+                  
+                  {state.consecutive_errors > 0 && (
+                    <div className="flex items-center text-yellow-600">
+                      <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+                      <span>{state.consecutive_errors} consecutive errors</span>
+                    </div>
+                  )}
+                  
+                  {state.recent_errors > 0 && (
+                    <div className="text-gray-500">
+                      {state.recent_errors} recent errors
+                    </div>
+                  )}
+                  
+                  {state.last_error_time && (
+                    <div className="text-gray-500">
+                      Last error: {formatDistanceToNow(new Date(state.last_error_time), { addSuffix: true })}
+                    </div>
+                  )}
+                </div>
+
+                {state.state === 'cooldown' && (
+                  <div className="mt-3 bg-red-100 border border-red-200 rounded p-2">
+                    <p className="text-xs text-red-700">
+                      Account temporarily suspended due to repeated rate limiting. 
+                      Tasks will resume automatically when cooldown expires.
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Device Setup Instructions */}
       {devices.length === 0 && (
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
