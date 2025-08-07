@@ -378,7 +378,7 @@ const InteractionsLog = () => {
                 <div className="animate-spin h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
                 <p className="text-gray-500">Loading interactions...</p>
               </div>
-            ) : interactions.length === 0 ? (
+            ) : !interactions || interactions.length === 0 ? (
               <div className="p-8 text-center">
                 <InformationCircleIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">No interactions found</p>
