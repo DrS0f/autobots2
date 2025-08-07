@@ -803,6 +803,36 @@ async def get_account_states():
         logger.error(f"Error getting account states: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get account states: {str(e)}")
 
+# License Management Endpoints
+@api_router.get("/license/status")
+async def get_license_status():
+    """Get current license status"""
+    try:
+        status = license_client.get_status()
+        return {
+            "success": True,
+            "license_status": status,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting license status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get license status: {str(e)}")
+
+@api_router.post("/license/verify")
+async def verify_license_now():
+    """Force immediate license verification"""
+    try:
+        status = await license_client.verify_immediately()
+        return {
+            "success": True,
+            "license_status": status,
+            "message": "License verification completed",
+            "updated_at": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error during license verification: {e}")
+        raise HTTPException(status_code=500, detail=f"License verification failed: {str(e)}")
+
 # Background task to auto-start system
 @app.on_event("startup")
 async def startup_event():
