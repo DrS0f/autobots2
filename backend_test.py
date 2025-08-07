@@ -436,7 +436,11 @@ class Phase5BackendTester:
                     client = LicenseClient()
                     
                     # Perform immediate verification
-                    asyncio.run(client._verify_now())
+                    async def verify_license_async():
+                        await client._verify_now()
+                        return client.status
+                    
+                    status = asyncio.run(verify_license_async())
                     
                     if client.status == LicenseStatus.OK:
                         self.log_test_result("License Client - Valid Key", True, "Client correctly validated license")
