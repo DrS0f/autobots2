@@ -662,9 +662,13 @@ async def cleanup_expired_interactions():
         db_manager = get_db_manager()
         cleaned_count = await db_manager.cleanup_expired_interactions()
         
+        # Also cleanup old account execution states
+        execution_manager = get_execution_manager()
+        execution_manager.cleanup_old_accounts()
+        
         return {
             "success": True,
-            "message": f"Cleaned up {cleaned_count} expired interaction records"
+            "message": f"Cleaned up {cleaned_count} expired interaction records and old account states"
         }
         
     except Exception as e:
