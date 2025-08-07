@@ -1,0 +1,62 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  backend:
+    build:
+      target: development
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./backend:/app/backend:rw  # Read-write for development
+      - backend_logs:/app/logs
+    command: ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+    ports:
+      - "8000:8000"
+      - "5678:5678"  # Debug port for remote debugging
+
+  frontend:
+    build:
+      target: development
+    environment:
+      - NODE_ENV=development
+      - FAST_REFRESH=true
+      - WDS_SOCKET_HOST=localhost
+    volumes:
+      - ./frontend/src:/app/src:rw
+      - ./frontend/public:/app/public:rw
+      - ./frontend/package.json:/app/package.json:ro
+      - frontend_node_modules:/app/node_modules
+    command: ["yarn", "start"]
+    ports:
+      - "3000:3000"
+
+  mongo:
+    ports:
+      - "27017:27017"
+    command: ["mongod", "--logpath", "/var/log/mongodb/mongod.log", "--logappend"]
+    
+  # Development tools
+  mongo-express:
+    image: mongo-express:latest
+    container_name: instagram_automation_mongo_express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD:-password}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password}@mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+    networks:
+      - instagram_automation_network
+
+volumes:
+  frontend_node_modules:
+    driver: local
