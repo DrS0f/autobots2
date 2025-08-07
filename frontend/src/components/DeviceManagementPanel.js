@@ -290,18 +290,22 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
               <div 
                 key={accountId} 
                 className={`border rounded-lg p-4 ${
-                  state.state === 'cooldown' 
+                  state.state === 'running'
+                    ? 'border-blue-200 bg-blue-50'
+                    : state.state === 'cooldown' || (state.error_state && state.error_state.state === 'cooldown')
                     ? 'border-red-200 bg-red-50' 
-                    : state.consecutive_errors > 0
+                    : (state.error_state && state.error_state.consecutive_errors > 0)
                     ? 'border-yellow-200 bg-yellow-50'
                     : 'border-green-200 bg-green-50'
                 }`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    {state.state === 'cooldown' ? (
+                    {state.state === 'running' ? (
+                      <PlayIcon className="h-5 w-5 text-blue-500 animate-pulse" />
+                    ) : state.state === 'cooldown' || (state.error_state && state.error_state.state === 'cooldown') ? (
                       <FireIcon className="h-5 w-5 text-red-500" />
-                    ) : state.consecutive_errors > 0 ? (
+                    ) : (state.error_state && state.error_state.consecutive_errors > 0) ? (
                       <ShieldExclamationIcon className="h-5 w-5 text-yellow-500" />
                     ) : (
                       <CheckCircleIcon className="h-5 w-5 text-green-500" />
@@ -312,51 +316,106 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
                       </h4>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    state.state === 'cooldown' 
-                      ? 'bg-red-100 text-red-800'
-                      : state.consecutive_errors > 0
-                      ? 'bg-yellow-100 text-yellow-800'  
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {state.state === 'cooldown' ? 'COOLDOWN' : 
-                     state.consecutive_errors > 0 ? 'WARNINGS' : 'ACTIVE'}
-                  </span>
+                  <div className="flex flex-col items-end space-y-1">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      state.state === 'running'
+                        ? 'bg-blue-100 text-blue-800'
+                        : state.state === 'cooldown' || (state.error_state && state.error_state.state === 'cooldown')
+                        ? 'bg-red-100 text-red-800'
+                        : (state.error_state && state.error_state.consecutive_errors > 0)
+                        ? 'bg-yellow-100 text-yellow-800'  
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {state.state === 'running' ? 'RUNNING TASK' :
+                       state.state === 'cooldown' || (state.error_state && state.error_state.state === 'cooldown') ? 'COOLDOWN' : 
+                       (state.error_state && state.error_state.consecutive_errors > 0) ? 'WARNINGS' : 'AVAILABLE'}
+                    </span>
+                    
+                    {state.waiting_tasks_count > 0 && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        {state.waiting_tasks_count} waiting
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2 text-xs text-gray-600">
-                  {state.state === 'cooldown' && state.cooldown_remaining > 0 && (
+                  {/* Current task information */}
+                  {state.current_task_id && (
+                    <div className="flex items-center text-blue-600">
+                      <PlayIcon className="h-3 w-3 mr-1" />
+                      <span>Running: {state.current_task_id.substring(0, 8)}... ({state.task_type})</span>
+                    </div>
+                  )}
+                  
+                  {/* Execution duration */}
+                  {state.execution_duration && (
+                    <div className="text-gray-500">
+                      Running for: {Math.floor(state.execution_duration / 60)}m {Math.floor(state.execution_duration % 60)}s
+                    </div>
+                  )}
+                  
+                  {/* Waiting tasks */}
+                  {state.waiting_tasks_count > 0 && (
+                    <div className="flex items-center text-amber-600">
+                      <ClockIcon className="h-3 w-3 mr-1" />
+                      <span>{state.waiting_tasks_count} task{state.waiting_tasks_count !== 1 ? 's' : ''} waiting in queue</span>
+                    </div>
+                  )}
+                  
+                  {/* Error state information */}
+                  {state.error_state && state.error_state.cooldown_remaining > 0 && (
                     <div className="flex items-center text-red-600">
                       <ClockIcon className="h-3 w-3 mr-1" />
-                      <span>Cooldown: {Math.floor(state.cooldown_remaining / 60)}m {state.cooldown_remaining % 60}s</span>
+                      <span>Cooldown: {Math.floor(state.error_state.cooldown_remaining / 60)}m {state.error_state.cooldown_remaining % 60}s</span>
                     </div>
                   )}
                   
-                  {state.consecutive_errors > 0 && (
+                  {state.error_state && state.error_state.consecutive_errors > 0 && (
                     <div className="flex items-center text-yellow-600">
                       <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
-                      <span>{state.consecutive_errors} consecutive errors</span>
+                      <span>{state.error_state.consecutive_errors} consecutive errors</span>
                     </div>
                   )}
                   
-                  {state.recent_errors > 0 && (
+                  {/* Last completed task */}
+                  {state.last_completed_task && (
                     <div className="text-gray-500">
-                      {state.recent_errors} recent errors
+                      Last completed: {state.last_completed_task.substring(0, 8)}... 
+                      {state.last_completed_at && ` ${formatDistanceToNow(new Date(state.last_completed_at), { addSuffix: true })}`}
                     </div>
                   )}
                   
-                  {state.last_error_time && (
+                  {/* Total tasks completed */}
+                  {state.total_tasks_completed > 0 && (
                     <div className="text-gray-500">
-                      Last error: {formatDistanceToNow(new Date(state.last_error_time), { addSuffix: true })}
+                      Total tasks completed: {state.total_tasks_completed}
                     </div>
                   )}
                 </div>
 
-                {state.state === 'cooldown' && (
+                {/* Status messages */}
+                {state.state === 'running' && (
+                  <div className="mt-3 bg-blue-100 border border-blue-200 rounded p-2">
+                    <p className="text-xs text-blue-700">
+                      Account is currently executing a task. New tasks will be queued and wait for completion.
+                    </p>
+                  </div>
+                )}
+                
+                {(state.state === 'cooldown' || (state.error_state && state.error_state.state === 'cooldown')) && (
                   <div className="mt-3 bg-red-100 border border-red-200 rounded p-2">
                     <p className="text-xs text-red-700">
                       Account temporarily suspended due to repeated rate limiting. 
                       Tasks will resume automatically when cooldown expires.
+                    </p>
+                  </div>
+                )}
+                
+                {state.waiting_tasks_count > 0 && (
+                  <div className="mt-3 bg-amber-100 border border-amber-200 rounded p-2">
+                    <p className="text-xs text-amber-700">
+                      {state.waiting_tasks_count} task{state.waiting_tasks_count !== 1 ? 's are' : ' is'} waiting for this account to become available.
                     </p>
                   </div>
                 )}
