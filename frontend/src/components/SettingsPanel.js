@@ -84,13 +84,14 @@ const SettingsPanel = () => {
   const addRateLimitStep = () => {
     setSettings({
       ...settings,
-      rate_limit_steps: [...settings.rate_limit_steps, 60]
+      rate_limit_steps: [...(settings.rate_limit_steps || []), 60]
     });
   };
 
   const removeRateLimitStep = (index) => {
-    if (settings.rate_limit_steps.length > 1) {
-      const newSteps = settings.rate_limit_steps.filter((_, i) => i !== index);
+    const currentSteps = settings.rate_limit_steps || [];
+    if (currentSteps.length > 1) {
+      const newSteps = currentSteps.filter((_, i) => i !== index);
       setSettings({
         ...settings,
         rate_limit_steps: newSteps
