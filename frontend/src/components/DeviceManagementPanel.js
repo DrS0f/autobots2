@@ -30,6 +30,7 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
   const loadAccountStates = async () => {
     setLoadingStates(true);
     try {
+      // Get combined account states (includes both execution and error states)
       const response = await apiClient.getAccountStates();
       if (response.success) {
         setAccountStates(response.account_states);
