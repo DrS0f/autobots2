@@ -187,16 +187,19 @@ backend:
         comment: "Updated both automators to use deduplication service and error handling. Added account availability checks before task execution. Follow/like methods now record interactions. Backend testing showed 91.2% functionality."
 
   - task: "Per-Account Concurrency Control"
-    implemented: false
-    working: "NA"
-    file: "backend/ios_automation/task_manager.py"
+    implemented: true
+    working: true
+    file: "backend/ios_automation/account_execution_manager.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Enforce per-account concurrency = 1, cooldown management, skip events logging"
+      - working: true
+        agent: "testing"
+        comment: "✅ Per-account concurrency control system fully implemented and working! Successfully tested: AccountExecutionManager singleton initialization, account state tracking (AVAILABLE/RUNNING/COOLDOWN), per-account concurrency enforcement (max 1 task per account), waiting task queue with FIFO ordering, task completion and state transitions, metrics tracking, TaskManager integration, EngagementTaskManager integration, all new API endpoints (/api/accounts/execution-states, /api/accounts/waiting-tasks, /api/metrics/concurrency), and integration with error handling cooldown system. 48/49 tests passed (97.96% success rate). Only minor CSV export format issue unrelated to concurrency control."
 
 frontend:
   - task: "Settings Panel Component"
