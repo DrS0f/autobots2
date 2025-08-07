@@ -355,9 +355,27 @@ class InstagramAutomator:
         except Exception as e:
             logger.error(f"Error exploring posts: {e}")
 
-    async def _like_current_post(self, driver) -> bool:
-        """Like the currently viewed post"""
+    async def _like_current_post(self, driver, task: InstagramTask, post_id: str = "unknown") -> bool:
+        """Like the currently viewed post (with deduplication)"""
+        action_start = time.time()
+        
         try:
+            # For likes, we use a combination of username and post identifier for deduplication
+            target_identifier = f"{task.target_username}_{post_id}"
+            
+            # Check deduplication 
+            should_engage, reason = await should_engage_user(
+                account_id=self.account_id,
+                target_username=target_identifier,
+                action="like",
+                task_id=task.task_id,
+                device_id=task.device_udid
+            )
+            
+            if not should_engage:
+                logger.info(f"Skipping like for {target_identifier}: {reason}")
+                return False
+            
             # Look for like button (heart icon)
             like_button = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((AppiumBy.XPATH, self.selectors['like_button']))
@@ -374,11 +392,67 @@ class InstagramAutomator:
             # Wait for like animation
             await asyncio.sleep(random.uniform(0.5, 1.0))
             
+            # Calculate latency
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            # Record successful like
+            await record_successful_engagement(
+                account_id=self.account_id,
+                target_username=target_identifier,
+                action="like",
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms,
+                metadata={"method": "post_like", "post_id": post_id}
+            )
+            
+            # Mark account interaction as successful
+            await mark_interaction_success(self.account_id)
+            
             logger.info("Successfully liked post")
             return True
             
         except TimeoutException:
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            await record_failed_engagement(
+                account_id=self.account_id,
+                target_username=f"{task.target_username}_{post_id}",
+                action="like",
+                status=InteractionStatus.FAILED,
+                reason="like_button_not_found",
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms
+            )
+            
             logger.warning("Could not find like button")
+            return False
+        except Exception as e:
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            # Handle error with advanced error handling
+            should_retry, delay, error_reason = await handle_automation_error(
+                error_message=str(e),
+                account_id=self.account_id,
+                device_id=task.device_udid,
+                task_id=task.task_id,
+                element_context="like_button",
+                metadata={"action": "like_post", "target": task.target_username, "post_id": post_id}
+            )
+            
+            await record_failed_engagement(
+                account_id=self.account_id,
+                target_username=f"{task.target_username}_{post_id}",
+                action="like",
+                status=InteractionStatus.FAILED,
+                reason=error_reason,
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms
+            )
+            
+            logger.error(f"Error liking post: {e}")
             return False
 
     async def _follow_user(self, driver, task: InstagramTask):
