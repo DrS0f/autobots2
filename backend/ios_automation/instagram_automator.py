@@ -466,17 +466,14 @@ class InstagramAutomator:
             (center_x, int(end_y))
         )
         
-        # Execute swipe with multiple touch points
-        action = TouchAction(driver)
-        
-        for i, (x, y, timestamp) in enumerate(swipe_points):
-            if i == 0:
-                action.press(x=x, y=y)
-            else:
-                action.move_to(x=x, y=y)
-                
-        action.release()
-        action.perform()
+        # Use mobile gesture for scrolling instead of TouchAction
+        driver.execute_script("mobile: swipe", {
+            "startX": center_x,
+            "startY": int(start_y),
+            "endX": center_x,
+            "endY": int(end_y),
+            "duration": 800
+        })
         
         # Random pause after scroll
         scroll_behavior = self.behavior_engine.generate_scroll_behavior(distance)
