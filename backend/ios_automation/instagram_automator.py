@@ -436,11 +436,14 @@ class InstagramAutomator:
         end_x = size['width'] // 2
         end_y = size['height'] // 2
         
-        action = TouchAction(driver)
-        action.press(x=start_x, y=start_y)
-        action.move_to(x=end_x, y=end_y)
-        action.release()
-        action.perform()
+        # Use mobile gesture instead of TouchAction
+        driver.execute_script("mobile: swipe", {
+            "startX": start_x,
+            "startY": start_y,
+            "endX": end_x,
+            "endY": end_y,
+            "duration": 800
+        })
         
         await asyncio.sleep(1)
 
