@@ -196,6 +196,12 @@ class EngagementTaskManager:
         queue_status = self.engagement_queue.get_queue_status()
         for task_info in queue_status["tasks"]:
             if task_info["task_id"] == task_id:
+                # Add target_pages for engagement tasks
+                if hasattr(self.engagement_queue, 'tasks'):
+                    for queue_task in self.engagement_queue.tasks:
+                        if queue_task.task_id == task_id:
+                            task_info["target_pages"] = getattr(queue_task, 'target_pages', [])
+                            break
                 return task_info
         
         return None
