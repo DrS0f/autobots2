@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from appium.webdriver.common.appiumby import AppiumBy
-from appium.webdriver.common.touch_action import TouchAction
+from selenium.webdriver.common.action_chains import ActionChains
 
 from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile, GestureType
 from .device_manager import IOSDevice
