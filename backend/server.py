@@ -430,6 +430,9 @@ async def shutdown_event():
         # Stop task workers
         await task_manager.stop_workers()
         
+        # Stop engagement workers
+        await engagement_task_manager.stop_engagement_workers()
+        
         # Cleanup all devices
         for udid in device_manager.devices.keys():
             await device_manager.cleanup_device(udid)
