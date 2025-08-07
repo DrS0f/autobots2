@@ -269,9 +269,11 @@ class TaskManager:
         return self.task_logs.get(task_id, [])
 
     async def get_dashboard_stats(self) -> dict:
-        """Get comprehensive dashboard statistics"""
+        """Get comprehensive dashboard statistics including account execution states"""
         device_status = self.device_manager.get_device_status()
         queue_status = self.task_queue.get_queue_status()
+        account_states = self.execution_manager.get_all_account_states()
+        execution_metrics = self.execution_manager.get_metrics()
         
         # Calculate average task duration
         if self.task_results:
@@ -279,6 +281,9 @@ class TaskManager:
             avg_duration = sum(durations) / len(durations)
         else:
             avg_duration = 0
+        
+        # Update waiting metrics from execution manager
+        self.stats["queued_waiting_on_account"] = execution_metrics.get("total_tasks_queued_waiting", 0)
         
         return {
             "system_stats": {
@@ -288,10 +293,13 @@ class TaskManager:
                 "total_tasks_created": self.stats["total_tasks_created"],
                 "total_tasks_completed": self.stats["total_tasks_completed"],
                 "total_tasks_failed": self.stats["total_tasks_failed"],
-                "average_task_duration": avg_duration
+                "average_task_duration": avg_duration,
+                "queued_waiting_on_account": self.stats["queued_waiting_on_account"]
             },
             "device_status": device_status,
             "queue_status": queue_status,
+            "account_execution_states": account_states,  # New section for per-account states
+            "execution_metrics": execution_metrics,      # New section for concurrency metrics
             "active_tasks": {
                 "count": len(self.active_tasks),
                 "tasks": [
@@ -299,11 +307,16 @@ class TaskManager:
                         "task_id": task.task_id,
                         "target_username": task.target_username,
                         "device_name": self.device_manager.devices.get(task.device_udid, {}).get('name', 'Unknown'),
+                        "account_id": task.device_udid,  # Show which account is being used
                         "started_at": task.started_at,
                         "duration": time.time() - task.started_at if task.started_at else 0
                     }
                     for task in self.active_tasks.values()
                 ]
+            },
+            "waiting_tasks": {  # New section showing tasks waiting for accounts
+                "by_account": self.execution_manager.get_waiting_tasks_by_account(),
+                "total_waiting": sum(len(tasks) for tasks in self.execution_manager.get_waiting_tasks_by_account().values())
             },
             "recent_results": [
                 {
