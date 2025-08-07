@@ -190,6 +190,27 @@ export const apiClient = {
     return response.data;
   },
 
+  // Account execution state endpoints
+  async getAccountExecutionStates() {
+    const response = await api.get('/accounts/execution-states');
+    return response.data;
+  },
+
+  async getAccountExecutionState(accountId) {
+    const response = await api.get(`/accounts/execution-states/${accountId}`);
+    return response.data;
+  },
+
+  async getWaitingTasks() {
+    const response = await api.get('/accounts/waiting-tasks');
+    return response.data;
+  },
+
+  async getConcurrencyMetrics() {
+    const response = await api.get('/metrics/concurrency');
+    return response.data;
+  },
+
   // Generic API call
   async get(endpoint) {
     const response = await api.get(endpoint);
