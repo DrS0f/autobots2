@@ -9,189 +9,189 @@
       "success": true,
       "details": "License server started successfully",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.984971"
+      "timestamp": "2025-08-07T22:44:08.748864"
     },
     {
       "test_name": "License Service Initialization",
       "success": true,
       "details": "Service initialized successfully",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.985145"
+      "timestamp": "2025-08-07T22:44:08.749034"
     },
     {
       "test_name": "Issue License",
       "success": true,
       "details": "License issued for customer test_customer_001",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.987632"
+      "timestamp": "2025-08-07T22:44:08.751594"
     },
     {
       "test_name": "Verify Valid License",
       "success": true,
       "details": "License valid: License is valid",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.988162"
+      "timestamp": "2025-08-07T22:44:08.752132"
     },
     {
       "test_name": "Verify Invalid License",
       "success": true,
       "details": "Correctly rejected: Invalid license token: Invalid header string: 'utf-8' codec can't decode byte 0x8a in position 0: invalid start byte",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.988235"
+      "timestamp": "2025-08-07T22:44:08.752205"
     },
     {
       "test_name": "Device Binding Check",
       "success": true,
       "details": "Device binding enforced: License not valid for this device",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.988522"
+      "timestamp": "2025-08-07T22:44:08.752509"
     },
     {
       "test_name": "List Licenses",
       "success": true,
-      "details": "Found 7 licenses",
+      "details": "Found 10 licenses",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.988648"
+      "timestamp": "2025-08-07T22:44:08.752647"
     },
     {
       "test_name": "Revoke License",
       "success": true,
       "details": "License revoked successfully",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.989364"
+      "timestamp": "2025-08-07T22:44:08.753449"
     },
     {
       "test_name": "Verify Revoked License",
       "success": true,
       "details": "Revoked license correctly rejected",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.989761"
+      "timestamp": "2025-08-07T22:44:08.753845"
     },
     {
       "test_name": "License Server Health",
       "success": true,
       "details": "Server is running",
       "error": "",
-      "timestamp": "2025-08-07T22:43:55.994186"
+      "timestamp": "2025-08-07T22:44:08.758099"
     },
     {
       "test_name": "API Issue License",
       "success": true,
       "details": "License issued via API for api_test_customer",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.025360"
+      "timestamp": "2025-08-07T22:44:08.786791"
     },
     {
       "test_name": "API Verify License",
       "success": true,
       "details": "License verified: License is valid",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.028758"
+      "timestamp": "2025-08-07T22:44:08.790203"
     },
     {
       "test_name": "API List Licenses",
       "success": true,
-      "details": "Retrieved 8 licenses",
+      "details": "Retrieved 11 licenses",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.031745"
+      "timestamp": "2025-08-07T22:44:08.793091"
     },
     {
       "test_name": "API Revoke License",
       "success": true,
       "details": "License revoked via API",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.035272"
+      "timestamp": "2025-08-07T22:44:08.796594"
     },
     {
       "test_name": "Admin Auth Check",
       "success": true,
       "details": "Invalid token correctly rejected",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.037707"
+      "timestamp": "2025-08-07T22:44:08.798962"
     },
     {
       "test_name": "License Client - No Key Required",
       "success": true,
       "details": "Client correctly allows operation without license",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.037925"
+      "timestamp": "2025-08-07T22:44:08.799149"
     },
     {
       "test_name": "License Client - Invalid Key",
       "success": true,
       "details": "Client correctly locked with invalid key",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.038002"
+      "timestamp": "2025-08-07T22:44:08.799222"
     },
     {
       "test_name": "License Client - Get Status",
       "success": true,
       "details": "Status: LOCKED",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.038054"
+      "timestamp": "2025-08-07T22:44:08.799274"
     },
     {
       "test_name": "License Client - Valid Key",
       "success": false,
       "details": "",
       "error": "Wrong status: LOCKED",
-      "timestamp": "2025-08-07T22:43:56.043046"
+      "timestamp": "2025-08-07T22:44:08.804261"
     },
     {
       "test_name": "Backend License Status API",
       "success": true,
       "details": "License status: no_license_required",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.099926"
+      "timestamp": "2025-08-07T22:44:08.853652"
     },
     {
       "test_name": "Backend License Verify API",
       "success": true,
       "details": "License verification endpoint working",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.122230"
+      "timestamp": "2025-08-07T22:44:08.872768"
     },
     {
       "test_name": "Dashboard License Integration",
       "success": true,
       "details": "License status included in dashboard",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.140870"
+      "timestamp": "2025-08-07T22:44:08.890178"
     },
     {
       "test_name": "Task Creation - No License Required",
       "success": true,
-      "details": "Task created: 784840ad-6181-457d-9f63-d5248b871377",
+      "details": "Task created: 508004e0-6dcd-4a14-9da6-42d68d7c89e9",
       "error": "",
-      "timestamp": "2025-08-07T22:43:56.195511"
+      "timestamp": "2025-08-07T22:44:08.912521"
     },
     {
       "test_name": "Task Creation - Invalid License Block",
       "success": false,
       "details": "",
       "error": "Expected 403, got 200",
-      "timestamp": "2025-08-07T22:43:58.212998"
+      "timestamp": "2025-08-07T22:44:10.932469"
     },
     {
       "test_name": "Engagement Task Creation - Invalid License Block",
       "success": false,
       "details": "",
       "error": "Expected 403, got 200",
-      "timestamp": "2025-08-07T22:43:58.234289"
+      "timestamp": "2025-08-07T22:44:10.956521"
     },
     {
       "test_name": "Grace Period Test",
       "success": false,
       "details": "",
       "error": "Grace period not working: Invalid license token: Signature has expired.",
-      "timestamp": "2025-08-07T22:44:00.240706"
+      "timestamp": "2025-08-07T22:44:12.962589"
     },
     {
       "test_name": "Expired License Test",
       "success": true,
       "details": "Expired license correctly rejected: Invalid license token: Signature has expired.",
       "error": "",
-      "timestamp": "2025-08-07T22:44:00.241034"
+      "timestamp": "2025-08-07T22:44:12.962912"
     }
   ]
 }
