@@ -731,7 +731,17 @@ async def shutdown_event():
         for udid in device_manager.devices.keys():
             await device_manager.cleanup_device(udid)
         
+        # Cleanup Phase 4 services
+        dedup_service = get_deduplication_service()
+        await dedup_service.cleanup_service()
+        
+        error_handler = get_error_handler()
+        await error_handler.cleanup_old_states()
+        
         # Close database connection
+        db_manager = get_db_manager()
+        await db_manager.close()
+        
         client.close()
         
     except Exception as e:
