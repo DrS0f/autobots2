@@ -16,6 +16,7 @@ import asyncio
 from ios_automation.device_manager import IOSDeviceManager, DeviceStatus
 from ios_automation.task_manager import TaskManager, TaskPriority
 from ios_automation.human_behavior import HumanBehaviorProfile
+from ios_automation.engagement_task_manager import EngagementTaskManager
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
