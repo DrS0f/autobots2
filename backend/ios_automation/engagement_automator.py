@@ -53,8 +53,9 @@ class EngagementTask:
 class EngagementAutomator:
     """Main engagement automation engine"""
     
-    def __init__(self, behavior_engine: HumanBehaviorEngine = None):
+    def __init__(self, behavior_engine: HumanBehaviorEngine = None, account_id: str = "default_account"):
         self.behavior_engine = behavior_engine or HumanBehaviorEngine()
+        self.account_id = account_id  # Account identifier for deduplication
         
         # Instagram UI selectors for engagement
         self.selectors = {
