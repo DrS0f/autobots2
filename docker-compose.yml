@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   mongo:
-    image: mongo:7.0
-    container_name: instagram_automation_mongo
+    image: mongo:6
+    container_name: gram_mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
       MONGO_INITDB_DATABASE: ${DB_NAME:-instagram_automation}
     ports:
       - "27017:27017"
@@ -17,26 +17,22 @@ services:
     networks:
       - instagram_automation_network
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
       target: production
-    container_name: instagram_automation_backend
+    container_name: gram_backend
     restart: unless-stopped
+    env_file: .env
     environment:
-      - MONGO_URL=mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password}@mongo:27017/${DB_NAME:-instagram_automation}?authSource=admin
-      - DB_NAME=${DB_NAME:-instagram_automation}
-      - REENGAGEMENT_DAYS_DEFAULT=${REENGAGEMENT_DAYS_DEFAULT:-30}
-      - RATE_LIMIT_STEPS=${RATE_LIMIT_STEPS:-60,120,300,600}
-      - COOLDOWN_AFTER_CONSECUTIVE=${COOLDOWN_AFTER_CONSECUTIVE:-3}
-      - COOLDOWN_MINUTES=${COOLDOWN_MINUTES:-45}
+      - MONGO_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME:-admin}:${MONGO_INITDB_ROOT_PASSWORD:-password}@mongo:27017/${DB_NAME:-instagram_automation}?authSource=admin
       - PYTHONPATH=/app/backend
     ports:
       - "8000:8000"
@@ -49,36 +45,34 @@ services:
     networks:
       - instagram_automation_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/system/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
     entrypoint: ["/app/scripts/wait-for-mongo.sh"]
-    command: ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
 
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
       target: production
-    container_name: instagram_automation_frontend
+    container_name: gram_frontend
     restart: unless-stopped
+    env_file: .env
     environment:
       - REACT_APP_BACKEND_URL=http://localhost:8000
       - NODE_ENV=production
     ports:
-      - "3000:3000"
+      - "8080:80"
     depends_on:
       backend:
         condition: service_healthy
-    volumes:
-      - ./frontend/src:/app/src:ro
-      - ./frontend/public:/app/public:ro
     networks:
       - instagram_automation_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -89,10 +83,10 @@ services:
       context: .
       dockerfile: backend/Dockerfile
       target: development
-    container_name: instagram_automation_init
+    container_name: gram_init
+    env_file: .env
     environment:
-      - MONGO_URL=mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password}@mongo:27017/${DB_NAME:-instagram_automation}?authSource=admin
-      - DB_NAME=${DB_NAME:-instagram_automation}
+      - MONGO_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME:-admin}:${MONGO_INITDB_ROOT_PASSWORD:-password}@mongo:27017/${DB_NAME:-instagram_automation}?authSource=admin
       - PYTHONPATH=/app/backend
     depends_on:
       mongo:
@@ -102,8 +96,7 @@ services:
       - ./scripts:/app/scripts:ro
     networks:
       - instagram_automation_network
-    profiles:
-      - init
+    restart: "no"
     command: ["python", "/app/scripts/init_db.py"]
 
 volumes:
