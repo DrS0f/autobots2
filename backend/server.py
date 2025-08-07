@@ -65,7 +65,7 @@ class EngagementTaskCreateRequest(BaseModel):
     actions: Dict[str, bool] = Field(default={"follow": True, "like": True, "comment": True}, 
                                    description="Actions to perform: follow, like, comment")
     max_users_per_page: int = Field(default=20, ge=1, le=50, description="Maximum users to process per target page")
-    profile_validation: Dict[str, bool] = Field(default={"public_only": True, "min_posts": 2}, 
+    profile_validation: Dict[str, Any] = Field(default={"public_only": True, "min_posts": 2}, 
                                               description="Profile validation criteria")
     skip_rate: float = Field(default=0.15, ge=0.0, le=0.5, description="Rate of users to skip for realism (0.1 = 10%)")
     priority: str = Field(default="normal", description="Task priority: low, normal, high, urgent")
