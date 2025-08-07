@@ -173,7 +173,7 @@ const SettingsPanel = () => {
               Rate Limit Backoff Steps
             </h4>
             <div className="space-y-3">
-              {settings.rate_limit_steps.map((step, index) => (
+              {(settings.rate_limit_steps || []).map((step, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <span className="text-sm text-gray-500 w-12">
                     Step {index + 1}:
@@ -193,7 +193,7 @@ const SettingsPanel = () => {
                       </span>
                     </div>
                   </div>
-                  {settings.rate_limit_steps.length > 1 && (
+                  {(settings.rate_limit_steps || []).length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeRateLimitStep(index)}
