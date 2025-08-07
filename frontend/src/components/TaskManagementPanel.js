@@ -5,7 +5,8 @@ import {
   PlayIcon,
   ClockIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  QueueListIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { apiClient } from '../services/api';
