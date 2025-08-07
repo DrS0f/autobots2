@@ -211,6 +211,17 @@ export const apiClient = {
     return response.data;
   },
 
+  // License Management endpoints
+  async getLicenseStatus() {
+    const response = await api.get('/license/status');
+    return response.data;
+  },
+
+  async verifyLicense() {
+    const response = await api.post('/license/verify');
+    return response.data;
+  },
+
   // Generic API call
   async get(endpoint) {
     const response = await api.get(endpoint);
