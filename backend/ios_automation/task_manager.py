@@ -115,6 +115,7 @@ class TaskManager:
     
     def __init__(self, device_manager: IOSDeviceManager):
         self.device_manager = device_manager
+        self.execution_manager = get_execution_manager()  # Per-account concurrency control
         self.task_queue = TaskQueue()
         self.instagram_automator = InstagramAutomator()
         
@@ -134,6 +135,7 @@ class TaskManager:
             "total_tasks_completed": 0,
             "total_tasks_failed": 0,
             "average_task_duration": 0,
+            "queued_waiting_on_account": 0,  # New metric for concurrency control
             "uptime_start": time.time()
         }
         
