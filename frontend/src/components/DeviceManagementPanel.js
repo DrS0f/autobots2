@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   DevicePhoneMobileIcon, 
   MagnifyingGlassIcon,
@@ -6,7 +6,9 @@ import {
   StopIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon
+  ClockIcon,
+  FireIcon,
+  ShieldExclamationIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { apiClient } from '../services/api';
@@ -15,6 +17,29 @@ import { formatDistanceToNow } from 'date-fns';
 const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
   const [discovering, setDiscovering] = useState(false);
   const [initializing, setInitializing] = useState({});
+  const [accountStates, setAccountStates] = useState({});
+  const [loadingStates, setLoadingStates] = useState(false);
+
+  // Load account states
+  useEffect(() => {
+    loadAccountStates();
+    const interval = setInterval(loadAccountStates, 10000); // Refresh every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadAccountStates = async () => {
+    setLoadingStates(true);
+    try {
+      const response = await apiClient.getAccountStates();
+      if (response.success) {
+        setAccountStates(response.account_states);
+      }
+    } catch (error) {
+      console.error('Error loading account states:', error);
+    } finally {
+      setLoadingStates(false);
+    }
+  };
 
   const handleDiscoverDevices = async () => {
     setDiscovering(true);
