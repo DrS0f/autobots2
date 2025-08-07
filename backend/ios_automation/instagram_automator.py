@@ -333,7 +333,9 @@ class InstagramAutomator:
                 # Decide whether to like this post
                 like_probability = self.behavior_engine.generate_like_probability()
                 if random.random() < like_probability:
-                    success = await self._like_current_post(driver)
+                    # Generate a simple post identifier (could be enhanced with actual post ID extraction)
+                    post_id = f"post_{i+1}"
+                    success = await self._like_current_post(driver, task, post_id)
                     if success:
                         likes_given += 1
                 
