@@ -369,6 +369,12 @@ class EngagementTaskManager:
         
         while self.engagement_running:
             try:
+                # Check license status first
+                if license_client and not license_client.is_licensed():
+                    logger.warning(f"Engagement worker {worker_id} paused due to license restrictions")
+                    await asyncio.sleep(30)  # Wait 30 seconds before checking again
+                    continue
+                
                 # Get next task from queue
                 task = await self.engagement_queue.get_next_task()
                 if not task:
