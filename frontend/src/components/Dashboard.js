@@ -238,6 +238,18 @@ const Dashboard = () => {
               onRefresh={fetchDashboardStats}
             />
           )}
+          {activeTab === 'interactions' && (
+            <InteractionsLog 
+              dashboardStats={dashboardStats} 
+              onRefresh={fetchDashboardStats}
+            />
+          )}
+          {activeTab === 'settings' && (
+            <SettingsPanel 
+              dashboardStats={dashboardStats} 
+              onRefresh={fetchDashboardStats}
+            />
+          )}
         </div>
       </div>
     </div>
