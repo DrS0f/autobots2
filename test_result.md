@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement Phase 4 – Session Integrity & Fail‑Safe Crawler Behavior end‑to‑end. Add persistent user interaction tracking with deduplication across sessions, advanced error handling with rate limit detection and backoff strategies, exportable logging, and production-ready safeguards to existing iOS Instagram automation system."
+user_problem_statement: "Implement Phase 5 – SaaS Licensing & Kill‑Switch: Add minimal License Server (FastAPI) in /licensing with JWT authentication, integrate client-side license verification in backend with 15-min intervals and LOCKED state for invalid licenses, create frontend license management UI with status display and global banner, include tests and documentation for production-ready licensing system."
 
 backend:
   - task: "Data Model Implementation"
