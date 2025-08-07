@@ -1,6 +1,7 @@
 """
 Instagram Automation Engine
 Handles all Instagram-specific automation tasks with human-like behavior
+Enhanced with Phase 4: Deduplication and advanced error handling
 """
 
 import asyncio
@@ -19,6 +20,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile, GestureType
 from .device_manager import IOSDevice
+from .deduplication_service import should_engage_user, record_successful_engagement, record_failed_engagement, InteractionStatus
+from .error_handling import handle_automation_error, is_account_ready, mark_interaction_success
 
 logger = logging.getLogger(__name__)
 
