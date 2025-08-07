@@ -28,6 +28,9 @@ class LicenseClient:
         self.license_api_url = os.environ.get("LICENSE_API_URL", "http://localhost:8002")
         self.verify_interval = int(os.environ.get("LICENSE_VERIFY_INTERVAL", "900"))  # 15 minutes
         
+        # Debug logging
+        logger.info(f"LicenseClient initialized with LICENSE_KEY: {'***' if self.license_key else 'NONE'}")
+        
         # State management
         self.status = LicenseStatus.LOCKED if self.license_key else LicenseStatus.OK  # Start OK if no key required
         self.last_verification = 0
