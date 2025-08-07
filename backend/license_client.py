@@ -216,5 +216,14 @@ def get_license_client():
         _license_client = LicenseClient()
     return _license_client
 
-# For backward compatibility
-license_client = get_license_client()
+# Create a property-like access for backward compatibility
+class LicenseClientProxy:
+    def __getattr__(self, name):
+        client = get_license_client()
+        return getattr(client, name)
+    
+    def __getitem__(self, key):
+        client = get_license_client()
+        return client[key]
+
+license_client = LicenseClientProxy()
