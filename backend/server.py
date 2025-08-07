@@ -1,5 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Query
+from fastapi.responses import JSONResponse, Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,14 +9,22 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
+import json
+import csv
+import io
 
 # Import iOS automation modules
 from ios_automation.device_manager import IOSDeviceManager, DeviceStatus
 from ios_automation.task_manager import TaskManager, TaskPriority
 from ios_automation.human_behavior import HumanBehaviorProfile
 from ios_automation.engagement_task_manager import EngagementTaskManager
+
+# Import Phase 4 modules
+from ios_automation.database_models import DatabaseManager, get_db_manager, init_database
+from ios_automation.deduplication_service import get_deduplication_service
+from ios_automation.error_handling import get_error_handler
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
