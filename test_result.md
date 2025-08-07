@@ -101,3 +101,122 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Implement Phase 4 – Session Integrity & Fail‑Safe Crawler Behavior end‑to‑end. Add persistent user interaction tracking with deduplication across sessions, advanced error handling with rate limit detection and backoff strategies, exportable logging, and production-ready safeguards to existing iOS Instagram automation system."
+
+backend:
+  - task: "Data Model Implementation"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/database_models.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Creating MongoDB collections: interactions_events (immutable audit log) and interactions_latest (deduplication control) with proper indexing and TTL"
+
+  - task: "Deduplication Middleware"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/deduplication_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implement should_engage() helper and integration with automators to check/prevent duplicate actions"
+
+  - task: "Advanced Error Handling"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/error_handling.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Instagram-specific error detection, rate limit detection, circuit breaker, exponential backoff with jitter"
+
+  - task: "Settings Management API"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Add endpoints for settings CRUD, interactions query/export, metrics dashboard"
+
+  - task: "Per-Account Concurrency Control"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/task_manager.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enforce per-account concurrency = 1, cooldown management, skip events logging"
+
+frontend:
+  - task: "Settings Panel Component"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/SettingsPanel.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "UI for configuring re-engagement days, backoff steps, cooldown thresholds"
+
+  - task: "Interactions Log Component"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/InteractionsLog.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Table with filters, export buttons, badge counts for different statuses"
+
+  - task: "Account State Indicators"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/DeviceManagementPanel.js"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Show Active/Cooldown status with countdown timers on device panel"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Data Model Implementation"
+    - "Deduplication Middleware"
+    - "Advanced Error Handling"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Starting Phase 4 implementation with database models and deduplication system. Will implement backend features first, then frontend components, ensuring no breaking changes to existing functionality."
