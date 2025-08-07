@@ -208,6 +208,12 @@ const Dashboard = () => {
               onRefresh={fetchDashboardStats}
             />
           )}
+          {activeTab === 'engagement' && (
+            <EngagementCrawler 
+              dashboardStats={dashboardStats} 
+              onRefresh={fetchDashboardStats}
+            />
+          )}
           {activeTab === 'devices' && (
             <DeviceManagementPanel 
               dashboardStats={dashboardStats} 
