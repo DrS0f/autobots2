@@ -212,7 +212,7 @@ frontend:
         comment: "Created comprehensive settings UI with re-engagement days, backoff steps, cooldown thresholds, visual configuration summary"
 
   - task: "Interactions Log Component"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "frontend/src/components/InteractionsLog.js"
     stuck_count: 0
@@ -221,7 +221,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Table with filters, export buttons, badge counts for different statuses"
+        comment: "Created table with filters, export buttons (CSV/JSON), metrics badges, pagination for interaction events"
 
   - task: "Account State Indicators"
     implemented: false
