@@ -182,6 +182,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Integration points verified successfully. Confirmed that automators properly integrate with deduplication service and error handling. Account availability checks implemented before task execution. All interaction recording mechanisms in place for follow/like operations."
+      - working: true
+        agent: "main"
+        comment: "Updated both automators to use deduplication service and error handling. Added account availability checks before task execution. Follow/like methods now record interactions. Backend testing showed 91.2% functionality."
 
   - task: "Per-Account Concurrency Control"
     implemented: false
