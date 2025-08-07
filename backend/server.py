@@ -569,7 +569,9 @@ async def export_interaction_events(
                 writer.writeheader()
                 
                 for event in events:
-                    # Convert datetime to string for CSV
+                    # Remove ObjectId and convert datetime to string for CSV
+                    if '_id' in event:
+                        del event['_id']  # Remove MongoDB ObjectId
                     if 'ts' in event and isinstance(event['ts'], datetime):
                         event['ts'] = event['ts'].isoformat()
                     writer.writerow({k: event.get(k, '') for k in fieldnames})
