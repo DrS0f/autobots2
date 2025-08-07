@@ -73,7 +73,8 @@ const SettingsPanel = () => {
   };
 
   const handleRateLimitStepsChange = (index, value) => {
-    const newSteps = [...settings.rate_limit_steps];
+    const currentSteps = settings.rate_limit_steps || [];
+    const newSteps = [...currentSteps];
     newSteps[index] = parseInt(value) || 0;
     setSettings({
       ...settings,
