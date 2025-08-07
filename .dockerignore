@@ -1,21 +1,49 @@
-# Git
+# VCS
 .git
 .gitignore
 .github
 
-# Documentation
-*.md
-!README.md
-docs/
+# Node
+frontend/node_modules
+frontend/.next
+frontend/dist
+frontend/build
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
 
-# IDE and editors
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+.venv
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+.eggs/
+*.egg-info/
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg
+MANIFEST
 
-# OS generated files
+# OS/editor
 .DS_Store
 .DS_Store?
 ._*
@@ -23,104 +51,88 @@ docs/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Logs
+Desktop.ini
+*.swp
+*.swo
+*~
 *.log
 logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Tests & reports
+tests/
+testing/
 coverage/
 .coverage
 htmlcov/
 .pytest_cache/
+.cache
+.tox/
+test-results/
+test_*.py
+*_test.py
+*test*.md
+backend_test.py
+PHASE*_TEST_REPORT*.md
+FRONTEND_*_TEST_REPORT.md
 
-# Dependency directories
-node_modules/
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual environments
-venv/
-ENV/
-env/
-.venv/
-
-# Environment files
+# Local env & secrets (examples stay)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.production
+*/.env
+backend/.env
+frontend/.env
+licensing/.env
+!.env.example
+!.env.production.example
 
-# Temporary files
+# Development artifacts
 *.tmp
 *.temp
 temp/
 tmp/
-
-# Docker
-Dockerfile*
-docker-compose*.yml
-.dockerignore
-
-# CI/CD
-.github/
-
-# Backup files
 *.bak
 *.backup
 backups/
 
-# Testing
-.tox/
-.coverage
-.pytest_cache/
-htmlcov/
-.cache
-
-# MacOS
-.DS_Store
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
-
-# JetBrains IDEs
-.idea/
-
-# Visual Studio Code
+# IDE files
 .vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Docker junk
+**/.dockerignore
+Dockerfile.dev
+docker-compose.dev.yml
+docker-compose.override.yml
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+licenses.json
+mongodb_data/
+/tmp/
+
+# Documentation (keep essential ones)
+*.md
+!README.md
+!INSTALL_DOCKER.md
+!LICENSED_DISTRIBUTION.md
+docs/
+documentation/
+
+# License server development files  
+licensing/admin_cli.py
+licensing/test_*.py
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+certificates/
+ssl/
