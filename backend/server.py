@@ -35,6 +35,7 @@ api_router = APIRouter(prefix="/api")
 # Global automation manager instances
 device_manager = IOSDeviceManager()
 task_manager = TaskManager(device_manager)
+engagement_task_manager = EngagementTaskManager(device_manager)
 
 # Pydantic Models
 class StatusCheck(BaseModel):
