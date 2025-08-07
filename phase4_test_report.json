@@ -1,246 +1,351 @@
 {
-  "total_tests": 34,
-  "passed_tests": 31,
-  "failed_tests": 3,
-  "success_rate": 91.17647058823529,
+  "total_tests": 49,
+  "passed_tests": 48,
+  "failed_tests": 1,
+  "success_rate": 97.95918367346938,
   "results": [
     {
       "test_name": "Database Indexes Creation",
       "success": true,
       "details": "All indexes created successfully",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.273443"
+      "timestamp": "2025-08-07T20:45:47.359590"
     },
     {
       "test_name": "Record Interaction Event",
       "success": true,
       "details": "Event recorded successfully",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.274252"
+      "timestamp": "2025-08-07T20:45:47.360545"
     },
     {
       "test_name": "Upsert Latest Interaction",
       "success": true,
       "details": "Latest interaction upserted",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.275471"
+      "timestamp": "2025-08-07T20:45:47.361516"
     },
     {
       "test_name": "Check Interaction Exists",
       "success": true,
       "details": "Found interaction: success",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.276346"
+      "timestamp": "2025-08-07T20:45:47.362350"
     },
     {
       "test_name": "Query Interaction Events",
       "success": true,
       "details": "Retrieved 1 events",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.277194"
+      "timestamp": "2025-08-07T20:45:47.363179"
     },
     {
       "test_name": "Get Interaction Metrics",
       "success": true,
       "details": "Metrics: 1 total",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.278177"
+      "timestamp": "2025-08-07T20:45:47.364222"
     },
     {
       "test_name": "Get Settings",
       "success": true,
       "details": "Default reengagement: 35 days",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.278855"
+      "timestamp": "2025-08-07T20:45:47.364934"
     },
     {
       "test_name": "Update Settings",
       "success": true,
       "details": "Settings updated successfully",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.279541"
+      "timestamp": "2025-08-07T20:45:47.365637"
     },
     {
       "test_name": "Should Engage - New User",
       "success": true,
       "details": "Allowed: allowed - no recent interaction found",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.280227"
+      "timestamp": "2025-08-07T20:45:47.366373"
     },
     {
       "test_name": "Record Successful Interaction",
       "success": true,
       "details": "Interaction recorded",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.281699"
+      "timestamp": "2025-08-07T20:45:47.367887"
     },
     {
       "test_name": "Should Engage - Existing User",
       "success": true,
-      "details": "Correctly blocked: dedupe_hit - last follow on 2025-08-07 19:39:57",
+      "details": "Correctly blocked: dedupe_hit - last follow on 2025-08-07 20:45:47",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.283173"
+      "timestamp": "2025-08-07T20:45:47.369387"
     },
     {
       "test_name": "Record Failed Interaction",
       "success": true,
       "details": "Failed interaction recorded",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.284537"
+      "timestamp": "2025-08-07T20:45:47.370856"
     },
     {
       "test_name": "Bulk Check Users",
       "success": true,
       "details": "Checked 3 users, 1 blocked",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.285851"
+      "timestamp": "2025-08-07T20:45:47.372241"
     },
     {
       "test_name": "Get User History",
       "success": true,
       "details": "Retrieved 2 history entries",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286816"
+      "timestamp": "2025-08-07T20:45:47.373093"
     },
     {
       "test_name": "Get Service Stats",
       "success": true,
       "details": "Total checks: 5",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286841"
+      "timestamp": "2025-08-07T20:45:47.373117"
     },
     {
       "test_name": "Error Type Detection - Rate Limited",
       "success": true,
       "details": "Correctly detected rate limit",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286860"
+      "timestamp": "2025-08-07T20:45:47.373135"
     },
     {
       "test_name": "Error Type Detection - Private Account",
       "success": true,
       "details": "Correctly detected private account",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286873"
+      "timestamp": "2025-08-07T20:45:47.373147"
     },
     {
       "test_name": "Handle Rate Limit Error",
       "success": true,
-      "details": "Retry in 54s: rate_limit_backoff - step 1",
+      "details": "Retry in 68s: rate_limit_backoff - step 1",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286923"
+      "timestamp": "2025-08-07T20:45:47.373188"
     },
     {
       "test_name": "Handle Private Account Error",
       "success": true,
       "details": "Correctly no retry: private_account - cannot access",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286946"
+      "timestamp": "2025-08-07T20:45:47.373204"
     },
     {
       "test_name": "Account Availability Check",
       "success": true,
       "details": "Account available: account_ready",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.286955"
+      "timestamp": "2025-08-07T20:45:47.373212"
     },
     {
       "test_name": "Cooldown Trigger",
       "success": true,
       "details": "Account in cooldown: cooldown_active - 2699s remaining",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.287154"
+      "timestamp": "2025-08-07T20:45:47.373404"
     },
     {
       "test_name": "Reset Account Errors",
       "success": true,
       "details": "Errors reset successfully",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.287167"
+      "timestamp": "2025-08-07T20:45:47.373418"
     },
     {
       "test_name": "Get Error Stats",
       "success": true,
       "details": "Total errors: 6",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.287180"
+      "timestamp": "2025-08-07T20:45:47.373442"
+    },
+    {
+      "test_name": "AccountExecutionManager Singleton",
+      "success": true,
+      "details": "Singleton pattern working correctly",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373453"
+    },
+    {
+      "test_name": "Account State Tracking - Initial",
+      "success": true,
+      "details": "Account starts in AVAILABLE state",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373472"
+    },
+    {
+      "test_name": "Concurrency Control - First Task",
+      "success": true,
+      "details": "First task started successfully",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373489"
+    },
+    {
+      "test_name": "Concurrency Control - Second Task Block",
+      "success": true,
+      "details": "Second task correctly blocked",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373533"
+    },
+    {
+      "test_name": "Waiting Queue - FIFO Ordering",
+      "success": true,
+      "details": "Tasks queued in order: 0, 1, 2",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373551"
+    },
+    {
+      "test_name": "Task Completion - State Transition",
+      "success": true,
+      "details": "Account available, next task: task_002",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373567"
+    },
+    {
+      "test_name": "Concurrency Metrics",
+      "success": true,
+      "details": "All metrics present: 6 total",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373581"
+    },
+    {
+      "test_name": "Cooldown State Integration",
+      "success": true,
+      "details": "Account correctly set to cooldown",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373592"
+    },
+    {
+      "test_name": "Cooldown Availability Check",
+      "success": true,
+      "details": "Correctly blocked: account_in_cooldown",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373601"
+    },
+    {
+      "test_name": "Remove Waiting Task",
+      "success": true,
+      "details": "Task removed from waiting queue",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.373612"
     },
     {
       "test_name": "GET /api/settings",
       "success": true,
       "details": "Retrieved settings: 45 days",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.330248"
+      "timestamp": "2025-08-07T20:45:47.481316"
     },
     {
       "test_name": "PUT /api/settings",
       "success": true,
       "details": "Settings updated successfully",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.352418"
+      "timestamp": "2025-08-07T20:45:47.502185"
     },
     {
       "test_name": "GET /api/interactions/events",
-      "success": false,
-      "details": "",
-      "error": "HTTP 500",
-      "timestamp": "2025-08-07T19:39:57.371438"
+      "success": true,
+      "details": "Retrieved 4 events",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.522265"
     },
     {
       "test_name": "GET /api/interactions/export (CSV)",
       "success": false,
       "details": "",
       "error": "Not CSV format",
-      "timestamp": "2025-08-07T19:39:57.387571"
+      "timestamp": "2025-08-07T20:45:47.543303"
     },
     {
       "test_name": "GET /api/interactions/export (JSON)",
-      "success": false,
-      "details": "",
-      "error": "HTTP 500",
-      "timestamp": "2025-08-07T19:39:57.413694"
+      "success": true,
+      "details": "JSON export: 4 events",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.562797"
     },
     {
       "test_name": "GET /api/metrics",
       "success": true,
       "details": "Metrics retrieved: interactions, deduplication, errors",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.433921"
+      "timestamp": "2025-08-07T20:45:47.583667"
     },
     {
       "test_name": "GET /api/accounts/states",
       "success": true,
       "details": "Account states: 0 accounts",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.452516"
+      "timestamp": "2025-08-07T20:45:47.605694"
     },
     {
       "test_name": "POST /api/interactions/cleanup",
       "success": true,
-      "details": "Cleaned up 0 expired interaction records",
+      "details": "Cleaned up 0 expired interaction records and old account states",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.472804"
+      "timestamp": "2025-08-07T20:45:47.665025"
+    },
+    {
+      "test_name": "GET /api/accounts/execution-states",
+      "success": true,
+      "details": "Retrieved 0 account states",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.687494"
+    },
+    {
+      "test_name": "GET /api/accounts/execution-states/{account_id}",
+      "success": true,
+      "details": "Specific account state endpoint working",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.706903"
+    },
+    {
+      "test_name": "GET /api/accounts/waiting-tasks",
+      "success": true,
+      "details": "Retrieved waiting tasks: 0 total",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.724787"
+    },
+    {
+      "test_name": "GET /api/metrics/concurrency",
+      "success": true,
+      "details": "Concurrency metrics: 6 fields",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.746119"
+    },
+    {
+      "test_name": "GET /api/accounts/states (Combined)",
+      "success": true,
+      "details": "Combined account states: 0 accounts",
+      "error": "",
+      "timestamp": "2025-08-07T20:45:47.763699"
     },
     {
       "test_name": "API Connectivity",
       "success": true,
       "details": "API is running and accessible",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.529583"
+      "timestamp": "2025-08-07T20:45:47.781503"
     },
     {
       "test_name": "System Health Check",
       "success": true,
       "details": "System status: warning",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.549113"
+      "timestamp": "2025-08-07T20:45:47.797122"
     },
     {
       "test_name": "Dashboard Stats Integration",
       "success": true,
       "details": "Dashboard stats accessible",
       "error": "",
-      "timestamp": "2025-08-07T19:39:57.565554"
+      "timestamp": "2025-08-07T20:45:47.816371"
     }
   ]
 }
