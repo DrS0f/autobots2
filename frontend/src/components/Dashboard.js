@@ -253,6 +253,9 @@ const Dashboard = () => {
               onRefresh={fetchDashboardStats}
             />
           )}
+          {activeTab === 'license' && (
+            <LicensePanel />
+          )}
         </div>
       </div>
     </div>
