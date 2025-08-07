@@ -551,6 +551,208 @@ class Phase4BackendTester:
         except Exception as e:
             self.log_test_result("POST /api/interactions/cleanup", False, error=str(e))
     
+    async def test_concurrency_control_system(self):
+        """Test per-account concurrency control system"""
+        print("\n🔄 Testing Per-Account Concurrency Control...")
+        
+        # Test 1: AccountExecutionManager singleton initialization
+        try:
+            manager1 = get_execution_manager()
+            manager2 = get_execution_manager()
+            if manager1 is manager2:
+                self.log_test_result("AccountExecutionManager Singleton", True, "Singleton pattern working correctly")
+            else:
+                self.log_test_result("AccountExecutionManager Singleton", False, error="Multiple instances created")
+        except Exception as e:
+            self.log_test_result("AccountExecutionManager Singleton", False, error=str(e))
+        
+        # Test 2: Account state tracking
+        try:
+            test_account = "concurrency_test_account"
+            test_task_1 = "task_001"
+            test_task_2 = "task_002"
+            test_device = "device_001"
+            
+            # Check initial state
+            account_info = self.execution_manager.get_or_create_account_info(test_account)
+            if account_info.state == AccountExecutionState.AVAILABLE:
+                self.log_test_result("Account State Tracking - Initial", True, "Account starts in AVAILABLE state")
+            else:
+                self.log_test_result("Account State Tracking - Initial", False, error=f"Wrong initial state: {account_info.state}")
+        except Exception as e:
+            self.log_test_result("Account State Tracking - Initial", False, error=str(e))
+        
+        # Test 3: Per-account concurrency enforcement (max 1 task per account)
+        try:
+            # Start first task
+            success1 = self.execution_manager.start_task_execution(test_account, test_task_1, test_device, "instagram")
+            if success1:
+                self.log_test_result("Concurrency Control - First Task", True, "First task started successfully")
+            else:
+                self.log_test_result("Concurrency Control - First Task", False, error="First task failed to start")
+            
+            # Try to start second task on same account (should fail)
+            success2 = self.execution_manager.start_task_execution(test_account, test_task_2, test_device, "instagram")
+            if not success2:
+                self.log_test_result("Concurrency Control - Second Task Block", True, "Second task correctly blocked")
+            else:
+                self.log_test_result("Concurrency Control - Second Task Block", False, error="Second task should be blocked")
+        except Exception as e:
+            self.log_test_result("Concurrency Control - Enforcement", False, error=str(e))
+        
+        # Test 4: Waiting task queue management (FIFO ordering)
+        try:
+            # Add multiple waiting tasks
+            test_task_3 = "task_003"
+            test_task_4 = "task_004"
+            
+            pos2 = self.execution_manager.add_waiting_task(test_account, test_task_2)
+            pos3 = self.execution_manager.add_waiting_task(test_account, test_task_3)
+            pos4 = self.execution_manager.add_waiting_task(test_account, test_task_4)
+            
+            if pos2 == 0 and pos3 == 1 and pos4 == 2:
+                self.log_test_result("Waiting Queue - FIFO Ordering", True, f"Tasks queued in order: {pos2}, {pos3}, {pos4}")
+            else:
+                self.log_test_result("Waiting Queue - FIFO Ordering", False, error=f"Wrong order: {pos2}, {pos3}, {pos4}")
+        except Exception as e:
+            self.log_test_result("Waiting Queue - FIFO Ordering", False, error=str(e))
+        
+        # Test 5: Task completion and account state transitions
+        try:
+            # Complete first task
+            next_task = self.execution_manager.complete_task_execution(test_account, test_task_1, success=True)
+            
+            # Check account state is available again
+            account_info = self.execution_manager.get_or_create_account_info(test_account)
+            if account_info.state == AccountExecutionState.AVAILABLE and next_task == test_task_2:
+                self.log_test_result("Task Completion - State Transition", True, f"Account available, next task: {next_task}")
+            else:
+                self.log_test_result("Task Completion - State Transition", False, error=f"State: {account_info.state}, next: {next_task}")
+        except Exception as e:
+            self.log_test_result("Task Completion - State Transition", False, error=str(e))
+        
+        # Test 6: Metrics tracking for concurrency control
+        try:
+            metrics = self.execution_manager.get_metrics()
+            required_metrics = ["total_accounts_tracked", "accounts_running", "accounts_waiting", "total_tasks_queued_waiting"]
+            
+            if all(metric in metrics for metric in required_metrics):
+                self.log_test_result("Concurrency Metrics", True, f"All metrics present: {len(metrics)} total")
+            else:
+                missing = [m for m in required_metrics if m not in metrics]
+                self.log_test_result("Concurrency Metrics", False, error=f"Missing metrics: {missing}")
+        except Exception as e:
+            self.log_test_result("Concurrency Metrics", False, error=str(e))
+        
+        # Test 7: Account cooldown state integration
+        try:
+            # Test cooldown state update
+            self.execution_manager.update_account_cooldown_state(test_account, in_cooldown=True)
+            account_info = self.execution_manager.get_or_create_account_info(test_account)
+            
+            if account_info.state == AccountExecutionState.COOLDOWN:
+                self.log_test_result("Cooldown State Integration", True, "Account correctly set to cooldown")
+            else:
+                self.log_test_result("Cooldown State Integration", False, error=f"Wrong state: {account_info.state}")
+            
+            # Test availability check during cooldown
+            can_execute, reason = self.execution_manager.can_execute_task(test_account, "test_task")
+            if not can_execute and "cooldown" in reason:
+                self.log_test_result("Cooldown Availability Check", True, f"Correctly blocked: {reason}")
+            else:
+                self.log_test_result("Cooldown Availability Check", False, error=f"Should be blocked: {can_execute}, {reason}")
+        except Exception as e:
+            self.log_test_result("Cooldown State Integration", False, error=str(e))
+        
+        # Test 8: Cleanup waiting tasks
+        try:
+            # Remove a waiting task
+            removed = self.execution_manager.remove_waiting_task(test_account, test_task_3)
+            if removed:
+                self.log_test_result("Remove Waiting Task", True, "Task removed from waiting queue")
+            else:
+                self.log_test_result("Remove Waiting Task", False, error="Failed to remove waiting task")
+        except Exception as e:
+            self.log_test_result("Remove Waiting Task", False, error=str(e))
+    
+    def test_concurrency_api_endpoints(self):
+        """Test new concurrency control API endpoints"""
+        print("\n🌐 Testing Concurrency Control API Endpoints...")
+        
+        # Test 1: GET /api/accounts/execution-states
+        try:
+            response = requests.get(f"{API_BASE_URL}/accounts/execution-states", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'account_states' in data:
+                    self.log_test_result("GET /api/accounts/execution-states", True, f"Retrieved {len(data['account_states'])} account states")
+                else:
+                    self.log_test_result("GET /api/accounts/execution-states", False, error="Invalid response format")
+            else:
+                self.log_test_result("GET /api/accounts/execution-states", False, error=f"HTTP {response.status_code}")
+        except Exception as e:
+            self.log_test_result("GET /api/accounts/execution-states", False, error=str(e))
+        
+        # Test 2: GET /api/accounts/execution-states/{account_id}
+        try:
+            test_account = "concurrency_test_account"
+            response = requests.get(f"{API_BASE_URL}/accounts/execution-states/{test_account}", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if 'account_state' in data or data.get('success') == False:  # Account might not exist
+                    self.log_test_result("GET /api/accounts/execution-states/{account_id}", True, "Specific account state endpoint working")
+                else:
+                    self.log_test_result("GET /api/accounts/execution-states/{account_id}", False, error="Invalid response format")
+            else:
+                self.log_test_result("GET /api/accounts/execution-states/{account_id}", False, error=f"HTTP {response.status_code}")
+        except Exception as e:
+            self.log_test_result("GET /api/accounts/execution-states/{account_id}", False, error=str(e))
+        
+        # Test 3: GET /api/accounts/waiting-tasks
+        try:
+            response = requests.get(f"{API_BASE_URL}/accounts/waiting-tasks", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'waiting_tasks_by_account' in data:
+                    total_waiting = data.get('total_waiting_tasks', 0)
+                    self.log_test_result("GET /api/accounts/waiting-tasks", True, f"Retrieved waiting tasks: {total_waiting} total")
+                else:
+                    self.log_test_result("GET /api/accounts/waiting-tasks", False, error="Invalid response format")
+            else:
+                self.log_test_result("GET /api/accounts/waiting-tasks", False, error=f"HTTP {response.status_code}")
+        except Exception as e:
+            self.log_test_result("GET /api/accounts/waiting-tasks", False, error=str(e))
+        
+        # Test 4: GET /api/metrics/concurrency
+        try:
+            response = requests.get(f"{API_BASE_URL}/metrics/concurrency", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'concurrency_metrics' in data:
+                    metrics = data['concurrency_metrics']
+                    self.log_test_result("GET /api/metrics/concurrency", True, f"Concurrency metrics: {len(metrics)} fields")
+                else:
+                    self.log_test_result("GET /api/metrics/concurrency", False, error="Invalid response format")
+            else:
+                self.log_test_result("GET /api/metrics/concurrency", False, error=f"HTTP {response.status_code}")
+        except Exception as e:
+            self.log_test_result("GET /api/metrics/concurrency", False, error=str(e))
+        
+        # Test 5: GET /api/accounts/states (combined execution and error states)
+        try:
+            response = requests.get(f"{API_BASE_URL}/accounts/states", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'account_states' in data:
+                    states = data['account_states']
+                    self.log_test_result("GET /api/accounts/states (Combined)", True, f"Combined account states: {len(states)} accounts")
+                else:
+                    self.log_test_result("GET /api/accounts/states (Combined)", False, error="Invalid response format")
+            else:
+                self.log_test_result("GET /api/accounts/states (Combined)", False, error=f"HTTP {response.status_code}")
+        except Exception as e:
+            self.log_test_result("GET /api/accounts/states (Combined)", False, error=str(e))
+    
     def test_integration_points(self):
         """Test integration with existing automation system"""
         print("\n🔗 Testing Integration Points...")
