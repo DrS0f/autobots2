@@ -221,6 +221,115 @@ async def get_queue_status():
     """Get current task queue status"""
     return task_manager.task_queue.get_queue_status()
 
+# Engagement Task Management Endpoints
+@api_router.post("/engagement-task", response_model=TaskResponse)
+async def create_engagement_task(request: EngagementTaskCreateRequest):
+    """Create a new engagement automation task"""
+    try:
+        # Validate priority
+        priority_map = {
+            "low": TaskPriority.LOW,
+            "normal": TaskPriority.NORMAL,
+            "high": TaskPriority.HIGH,
+            "urgent": TaskPriority.URGENT
+        }
+        
+        priority = priority_map.get(request.priority.lower(), TaskPriority.NORMAL)
+        
+        # Validate comment list
+        if not request.comment_list:
+            raise HTTPException(status_code=400, detail="Comment list cannot be empty")
+        
+        # Validate target pages
+        if not request.target_pages:
+            raise HTTPException(status_code=400, detail="Target pages list cannot be empty")
+        
+        # Create engagement task
+        task_id = await engagement_task_manager.create_engagement_task(
+            target_pages=request.target_pages,
+            comment_list=request.comment_list,
+            actions=request.actions,
+            max_users_per_page=request.max_users_per_page,
+            profile_validation=request.profile_validation,
+            skip_rate=request.skip_rate,
+            priority=priority
+        )
+        
+        return TaskResponse(
+            task_id=task_id,
+            status="created",
+            message=f"Engagement task created for {len(request.target_pages)} target pages"
+        )
+        
+    except Exception as e:
+        logger.error(f"Engagement task creation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Engagement task creation failed: {str(e)}")
+
+@api_router.get("/engagement-status/{task_id}")
+async def get_engagement_task_status(task_id: str):
+    """Get status of a specific engagement task"""
+    status = await engagement_task_manager.get_engagement_task_status(task_id)
+    if not status:
+        raise HTTPException(status_code=404, detail="Engagement task not found")
+    return status
+
+@api_router.get("/engagement-status")
+async def get_engagement_dashboard_stats():
+    """Get comprehensive engagement dashboard statistics"""
+    try:
+        stats = await engagement_task_manager.get_engagement_dashboard_stats()
+        return stats
+    except Exception as e:
+        logger.error(f"Failed to get engagement dashboard stats: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get engagement dashboard stats: {str(e)}")
+
+@api_router.get("/engagement-history")
+async def get_engagement_history():
+    """Get engagement task history and analytics"""
+    try:
+        history = await engagement_task_manager.get_engagement_history()
+        return history
+    except Exception as e:
+        logger.error(f"Failed to get engagement history: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get engagement history: {str(e)}")
+
+@api_router.get("/engagement-task/{task_id}/logs")
+async def get_engagement_task_logs(task_id: str):
+    """Get logs for a specific engagement task"""
+    logs = await engagement_task_manager.get_engagement_task_logs(task_id)
+    if logs is None:
+        raise HTTPException(status_code=404, detail="Engagement task not found")
+    return {"task_id": task_id, "logs": logs}
+
+@api_router.delete("/engagement-task/{task_id}/cancel")
+async def cancel_engagement_task(task_id: str):
+    """Cancel a pending or running engagement task"""
+    success = await engagement_task_manager.cancel_engagement_task(task_id)
+    if success:
+        return {"success": True, "message": f"Engagement task {task_id} cancelled"}
+    else:
+        raise HTTPException(status_code=404, detail="Engagement task not found or cannot be cancelled")
+
+@api_router.post("/engagement/start")
+async def start_engagement_system():
+    """Start the engagement automation workers"""
+    try:
+        await engagement_task_manager.start_engagement_workers()
+        return {"success": True, "message": "Engagement automation system started"}
+    except Exception as e:
+        logger.error(f"Failed to start engagement system: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to start engagement system: {str(e)}")
+
+@api_router.post("/engagement/stop")
+async def stop_engagement_system():
+    """Stop the engagement automation workers"""
+    try:
+        await engagement_task_manager.stop_engagement_workers()
+        return {"success": True, "message": "Engagement automation system stopped"}
+    except Exception as e:
+        logger.error(f"Failed to stop engagement system: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to stop engagement system: {str(e)}")
+
 # Dashboard and Monitoring Endpoints
 @api_router.get("/dashboard/stats", response_model=SystemStats)
 async def get_dashboard_stats():
