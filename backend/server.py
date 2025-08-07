@@ -424,14 +424,275 @@ async def get_system_health():
         "queue_size": queue_status["total_tasks"]
     }
 
+# Phase 4 API Endpoints
+
+@api_router.get("/settings")
+async def get_settings():
+    """Get current system settings"""
+    try:
+        db_manager = get_db_manager()
+        settings = await db_manager.get_settings()
+        return {"success": True, "settings": settings}
+    except Exception as e:
+        logger.error(f"Error getting settings: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get settings: {str(e)}")
+
+@api_router.put("/settings")
+async def update_settings(settings_update: SystemSettingsUpdate):
+    """Update system settings"""
+    try:
+        db_manager = get_db_manager()
+        
+        # Convert to dict and filter None values
+        settings_dict = {k: v for k, v in settings_update.dict().items() if v is not None}
+        
+        success = await db_manager.update_settings(settings_dict)
+        if success:
+            return {"success": True, "message": "Settings updated successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update settings")
+    except Exception as e:
+        logger.error(f"Error updating settings: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update settings: {str(e)}")
+
+@api_router.get("/interactions/latest")
+async def get_latest_interactions(
+    account_id: Optional[str] = Query(None),
+    username: Optional[str] = Query(None),
+    action: Optional[str] = Query(None)
+):
+    """Get latest interaction records for deduplication checking"""
+    try:
+        db_manager = get_db_manager()
+        
+        # If specific parameters provided, check that interaction
+        if account_id and username and action:
+            interaction = await db_manager.check_interaction_exists(account_id, username, action)
+            if interaction:
+                return {
+                    "success": True,
+                    "interaction": {
+                        "account_id": interaction.account_id,
+                        "target_username": interaction.target_username,
+                        "action": interaction.action,
+                        "last_status": interaction.last_status,
+                        "last_ts": interaction.last_ts.isoformat(),
+                        "expires_at": interaction.expires_at.isoformat() if interaction.expires_at else None
+                    }
+                }
+            else:
+                return {"success": True, "interaction": None}
+        else:
+            # Return summary of all latest interactions
+            # This would require a new method in database_models.py
+            return {"success": True, "message": "Use specific account_id, username, and action parameters"}
+            
+    except Exception as e:
+        logger.error(f"Error getting latest interactions: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get latest interactions: {str(e)}")
+
+@api_router.get("/interactions/events")
+async def get_interaction_events(
+    account_id: Optional[str] = Query(None),
+    target_username: Optional[str] = Query(None),
+    action: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    from_date: Optional[datetime] = Query(None),
+    to_date: Optional[datetime] = Query(None),
+    limit: int = Query(100, ge=1, le=1000),
+    skip: int = Query(0, ge=0)
+):
+    """Get interaction events with filters and pagination"""
+    try:
+        db_manager = get_db_manager()
+        
+        events = await db_manager.get_interaction_events(
+            account_id=account_id,
+            target_username=target_username,
+            action=action,
+            status=status,
+            from_date=from_date,
+            to_date=to_date,
+            limit=limit,
+            skip=skip
+        )
+        
+        # Convert datetime objects to ISO strings for JSON serialization
+        for event in events:
+            if 'ts' in event and isinstance(event['ts'], datetime):
+                event['ts'] = event['ts'].isoformat()
+        
+        return {
+            "success": True,
+            "events": events,
+            "count": len(events),
+            "limit": limit,
+            "skip": skip
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting interaction events: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get interaction events: {str(e)}")
+
+@api_router.get("/interactions/export")
+async def export_interaction_events(
+    format: str = Query("csv", description="Export format: csv or json"),
+    account_id: Optional[str] = Query(None),
+    action: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    from_date: Optional[datetime] = Query(None),
+    to_date: Optional[datetime] = Query(None)
+):
+    """Export interaction events as CSV or JSON"""
+    try:
+        db_manager = get_db_manager()
+        
+        # Get all matching events (no pagination for export)
+        events = await db_manager.get_interaction_events(
+            account_id=account_id,
+            action=action,
+            status=status,
+            from_date=from_date,
+            to_date=to_date,
+            limit=10000  # Large limit for export
+        )
+        
+        if format.lower() == "csv":
+            # Create CSV
+            output = io.StringIO()
+            if events:
+                fieldnames = ['platform', 'account_id', 'target_username', 'action', 'status', 
+                            'reason', 'task_id', 'device_id', 'latency_ms', 'ts']
+                writer = csv.DictWriter(output, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for event in events:
+                    # Convert datetime to string for CSV
+                    if 'ts' in event and isinstance(event['ts'], datetime):
+                        event['ts'] = event['ts'].isoformat()
+                    writer.writerow({k: event.get(k, '') for k in fieldnames})
+            
+            csv_content = output.getvalue()
+            output.close()
+            
+            return Response(
+                content=csv_content,
+                media_type="text/csv",
+                headers={"Content-Disposition": f"attachment; filename=interactions_export.csv"}
+            )
+        
+        elif format.lower() == "json":
+            # Convert datetime objects for JSON
+            for event in events:
+                if 'ts' in event and isinstance(event['ts'], datetime):
+                    event['ts'] = event['ts'].isoformat()
+            
+            json_content = json.dumps({
+                "exported_at": datetime.utcnow().isoformat(),
+                "total_events": len(events),
+                "filters": {
+                    "account_id": account_id,
+                    "action": action,
+                    "status": status,
+                    "from_date": from_date.isoformat() if from_date else None,
+                    "to_date": to_date.isoformat() if to_date else None
+                },
+                "events": events
+            }, indent=2)
+            
+            return Response(
+                content=json_content,
+                media_type="application/json",
+                headers={"Content-Disposition": f"attachment; filename=interactions_export.json"}
+            )
+        
+        else:
+            raise HTTPException(status_code=400, detail="Format must be 'csv' or 'json'")
+            
+    except Exception as e:
+        logger.error(f"Error exporting interaction events: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to export interaction events: {str(e)}")
+
+@api_router.get("/metrics")
+async def get_metrics():
+    """Get comprehensive metrics for dashboard"""
+    try:
+        db_manager = get_db_manager()
+        dedup_service = get_deduplication_service()
+        error_handler = get_error_handler()
+        
+        # Get interaction metrics
+        interaction_metrics = await db_manager.get_interaction_metrics()
+        
+        # Get deduplication stats
+        dedup_stats = dedup_service.get_stats()
+        
+        # Get error handling stats
+        error_stats = error_handler.get_error_stats()
+        
+        # Get account states
+        account_states = error_handler.get_all_account_states()
+        
+        return {
+            "success": True,
+            "metrics": {
+                "interactions": interaction_metrics,
+                "deduplication": dedup_stats,
+                "error_handling": error_stats,
+                "account_states": account_states,
+                "updated_at": datetime.utcnow().isoformat()
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting metrics: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get metrics: {str(e)}")
+
+@api_router.post("/interactions/cleanup")
+async def cleanup_expired_interactions():
+    """Manually trigger cleanup of expired interaction records"""
+    try:
+        db_manager = get_db_manager()
+        cleaned_count = await db_manager.cleanup_expired_interactions()
+        
+        return {
+            "success": True,
+            "message": f"Cleaned up {cleaned_count} expired interaction records"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error cleaning up interactions: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to cleanup interactions: {str(e)}")
+
+@api_router.get("/accounts/states")
+async def get_account_states():
+    """Get current state of all accounts (active, cooldown, etc.)"""
+    try:
+        error_handler = get_error_handler()
+        account_states = error_handler.get_all_account_states()
+        
+        return {
+            "success": True,
+            "account_states": account_states,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting account states: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get account states: {str(e)}")
+
 # Background task to auto-start system
 @app.on_event("startup")
 async def startup_event():
     """Initialize system on startup"""
     logger.info("Starting iOS Instagram Automation API")
     
-    # Discover devices on startup
     try:
+        # Initialize Phase 4 database
+        await init_database()
+        logger.info("Phase 4 database initialized")
+        
+        # Discover devices on startup
         devices = await device_manager.discover_devices()
         logger.info(f"Discovered {len(devices)} iOS devices")
         
