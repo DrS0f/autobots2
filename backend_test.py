@@ -67,6 +67,7 @@ class Phase4BackendTester:
             self.db_manager = get_db_manager()
             self.dedup_service = get_deduplication_service()
             self.error_handler = get_error_handler()
+            self.execution_manager = get_execution_manager()
             
             # Clean up any existing test data
             await self._cleanup_test_data()
