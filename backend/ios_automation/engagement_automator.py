@@ -594,8 +594,33 @@ class EngagementAutomator:
             return False
 
     async def _like_latest_post(self, driver, username: str, task: EngagementTask) -> bool:
-        """Like the user's latest post"""
+        """Like the user's latest post (with deduplication)"""
+        action_start = time.time()
+        
         try:
+            # For likes, use username + "_latest" as identifier for deduplication
+            target_identifier = f"{username}_latest"
+            
+            # Check deduplication first
+            should_engage, reason = await should_engage_user(
+                account_id=self.account_id,
+                target_username=target_identifier,
+                action="like",
+                task_id=task.task_id,
+                device_id=task.device_udid
+            )
+            
+            if not should_engage:
+                logger.info(f"Skipping like for @{username} latest post: {reason}")
+                task.completed_actions.append({
+                    "action": "like_post",
+                    "username": username,
+                    "timestamp": time.time(),
+                    "success": False,
+                    "reason": reason
+                })
+                return False
+            
             # Find and click first post
             first_post = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((AppiumBy.XPATH, self.selectors['post_first']))
@@ -614,6 +639,20 @@ class EngagementAutomator:
             if like_button.get_attribute('selected') == 'true':
                 logger.info(f"Post already liked for @{username}")
                 await self._navigate_back(driver)
+                
+                # Record as dedupe hit
+                latency_ms = int((time.time() - action_start) * 1000)
+                await record_failed_engagement(
+                    account_id=self.account_id,
+                    target_username=target_identifier,
+                    action="like",
+                    status=InteractionStatus.DEDUPE_HIT,
+                    reason="post_already_liked",
+                    task_id=task.task_id,
+                    device_id=task.device_udid,
+                    latency_ms=latency_ms
+                )
+                
                 return False
             
             await self.behavior_engine.pre_action_delay(GestureType.TAP)
@@ -623,6 +662,23 @@ class EngagementAutomator:
             # Go back to profile
             await self._navigate_back(driver)
             await asyncio.sleep(1)
+            
+            # Calculate latency
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            # Record successful like
+            await record_successful_engagement(
+                account_id=self.account_id,
+                target_username=target_identifier,
+                action="like",
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms,
+                metadata={"method": "engagement_like", "post_type": "latest"}
+            )
+            
+            # Mark account interaction as successful
+            await mark_interaction_success(self.account_id)
             
             logger.info(f"Successfully liked latest post from @{username}")
             
@@ -636,6 +692,31 @@ class EngagementAutomator:
             return True
             
         except Exception as e:
+            latency_ms = int((time.time() - action_start) * 1000)
+            
+            # Handle error with advanced error handling
+            should_retry, delay, error_reason = await handle_automation_error(
+                error_message=str(e),
+                account_id=self.account_id,
+                device_id=task.device_udid,
+                task_id=task.task_id,
+                element_context="like_button",
+                metadata={"action": "like_post", "target": username, "method": "engagement"}
+            )
+            
+            await record_failed_engagement(
+                account_id=self.account_id,
+                target_username=f"{username}_latest",
+                action="like",
+                status=InteractionStatus.FAILED,
+                reason=error_reason,
+                task_id=task.task_id,
+                device_id=task.device_udid,
+                latency_ms=latency_ms
+            )
+            
+            logger.error(f"Error liking latest post from @{username}: {e}")
+            return False
             logger.error(f"Error liking post from @{username}: {e}")
             return False
 
