@@ -229,6 +229,12 @@ frontend:
     file: "frontend/src/components/DeviceManagementPanel.js"
     stuck_count: 0
     priority: "low"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added account states section showing Active/Cooldown status with countdown timers, error counts, recent activity"
+
   - task: "Dashboard Integration"
     implemented: true
     working: "NA"
@@ -240,9 +246,6 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Integrated new tabs for Interaction Logs and Settings into main dashboard navigation"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
         agent: "main"
         comment: "Added account states section showing Active/Cooldown status with countdown timers, error counts, recent activity"
 
