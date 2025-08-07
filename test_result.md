@@ -105,98 +105,53 @@
 user_problem_statement: "Implement Phase 5 – SaaS Licensing & Kill‑Switch: Add minimal License Server (FastAPI) in /licensing with JWT authentication, integrate client-side license verification in backend with 15-min intervals and LOCKED state for invalid licenses, create frontend license management UI with status display and global banner, include tests and documentation for production-ready licensing system."
 
 backend:
-  - task: "Data Model Implementation"
+  - task: "License Server Implementation"
     implemented: true
-    working: true
-    file: "backend/ios_automation/database_models.py"
+    working: false
+    file: "licensing/server.py, licensing/license_service.py, licensing/models.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Created MongoDB collections: interactions_events (immutable audit log) and interactions_latest (deduplication control) with proper indexing and TTL. Added DatabaseManager class with all CRUD operations."
-      - working: true
-        agent: "testing"
-        comment: "✅ All database operations working correctly. Successfully tested: index creation, event recording, latest interaction upserts, interaction existence checks, event queries, metrics generation, and settings management. Fixed minor MongoDB _id field issue."
+        comment: "Created FastAPI license server in /licensing directory with JWT-based license management. Implemented endpoints for issue, verify, revoke operations. Added LicenseService for JWT handling and file-based storage. Created admin CLI tool for license management."
 
-  - task: "Deduplication Middleware"
+  - task: "Backend License Integration"
     implemented: true
-    working: true
-    file: "backend/ios_automation/deduplication_service.py"
+    working: false
+    file: "backend/license_client.py, backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Implemented should_engage() helper with caching, integrated with both InstagramAutomator and EngagementAutomator to check/prevent duplicate actions"
-      - working: true
-        agent: "testing"
-        comment: "✅ Deduplication service fully functional. Successfully tested: should_engage checks for new/existing users, successful/failed interaction recording, bulk user checks, user history retrieval, caching behavior, and service statistics. Correctly blocks duplicate actions within reengagement window."
+        comment: "Integrated LicenseClient into main backend with background verification every 15 minutes. Added license checks to task creation endpoints (returns 403 when locked). Updated worker loops to pause when unlicensed. Added license status API endpoints."
 
-  - task: "Advanced Error Handling"
+  - task: "Task Worker License Enforcement"
     implemented: true
-    working: true
-    file: "backend/ios_automation/error_handling.py"
+    working: false
+    file: "backend/ios_automation/task_manager.py, engagement_task_manager.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Implemented Instagram-specific error detection, rate limit detection with exponential backoff, circuit breaker, account cooldown management"
-      - working: true
-        agent: "testing"
-        comment: "✅ Error handling system working perfectly. Successfully tested: Instagram-specific error pattern detection (rate limits, private accounts), exponential backoff with jitter, account cooldown triggers after consecutive errors, account availability checks, error statistics, and account state management."
+        comment: "Modified both TaskManager and EngagementTaskManager worker loops to check license status. Workers pause for 30 seconds when system is unlicensed. Task creation blocked with HTTP 403 when license invalid."
 
-  - task: "Settings Management API"
+  - task: "License Status in Dashboard API"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Added endpoints: GET/PUT /api/settings, GET /api/interactions/events, GET /api/interactions/export, GET /api/metrics, GET /api/accounts/states - all Phase 4 API endpoints implemented"
-      - working: true
-        agent: "testing"
-        comment: "✅ Most API endpoints working correctly. Successfully tested: GET/PUT /api/settings (configuration management), GET /api/metrics (comprehensive dashboard metrics), GET /api/accounts/states (account status monitoring), POST /api/interactions/cleanup. Minor: 3 endpoints have ObjectId serialization issues (interactions/events, interactions/export JSON) - easily fixable but core functionality works."
-      - working: true
-        agent: "main"
-        comment: "Added endpoints: GET/PUT /api/settings, GET /api/interactions/events, GET /api/interactions/export, GET /api/metrics, GET /api/accounts/states - all Phase 4 API endpoints implemented. Fixed ObjectId serialization issues."
-
-  - task: "Integration with Existing Automators"
-    implemented: true
-    working: true
-    file: "backend/ios_automation/instagram_automator.py, engagement_automator.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Updated both automators to use deduplication service and error handling. Added account availability checks before task execution. Follow/like methods now record interactions."
-      - working: true
-        agent: "testing"
-        comment: "✅ Integration points verified successfully. Confirmed that automators properly integrate with deduplication service and error handling. Account availability checks implemented before task execution. All interaction recording mechanisms in place for follow/like operations."
-      - working: true
-        agent: "main"
-        comment: "Updated both automators to use deduplication service and error handling. Added account availability checks before task execution. Follow/like methods now record interactions. Backend testing showed 91.2% functionality."
-
-  - task: "Per-Account Concurrency Control"
-    implemented: true
-    working: true
-    file: "backend/ios_automation/account_execution_manager.py, task_manager.py, engagement_task_manager.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Per-account concurrency control fully implemented and tested. 97.96% success rate (48/49 tests passed). Account execution manager working perfectly, task queuing with FIFO ordering implemented, all API endpoints functional. Only 1 minor CSV export header issue unrelated to concurrency control."
+        comment: "Added license_status field to SystemStats model and dashboard stats endpoint. License information now included in real-time dashboard updates."
 
 frontend:
   - task: "Settings Panel Component"
