@@ -414,6 +414,10 @@ async def startup_event():
         await task_manager.start_workers()
         logger.info("Task workers started")
         
+        # Start engagement workers
+        await engagement_task_manager.start_engagement_workers()
+        logger.info("Engagement workers started")
+        
     except Exception as e:
         logger.error(f"Startup initialization failed: {e}")
 
