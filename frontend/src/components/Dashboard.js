@@ -71,6 +71,8 @@ const Dashboard = () => {
     { id: 'devices', name: 'Devices', icon: DevicePhoneMobileIcon },
     { id: 'monitoring', name: 'System Monitor', icon: ChartBarIcon },
     { id: 'history', name: 'Task History', icon: ClockIcon },
+    { id: 'interactions', name: 'Interaction Logs', icon: DocumentTextIcon },
+    { id: 'settings', name: 'Settings', icon: CogIcon },
   ];
 
   if (loading) {
