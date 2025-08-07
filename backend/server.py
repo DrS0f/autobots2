@@ -266,6 +266,10 @@ async def get_queue_status():
 @api_router.post("/engagement-task", response_model=TaskResponse)
 async def create_engagement_task(request: EngagementTaskCreateRequest):
     """Create a new engagement automation task"""
+    # Check license first
+    if not license_client.is_licensed():
+        raise HTTPException(status_code=403, detail="License required: System is locked due to invalid or expired license")
+    
     try:
         # Validate priority
         priority_map = {
