@@ -310,6 +310,56 @@ const TaskManagementPanel = ({ dashboardStats, onRefresh }) => {
             </div>
           </div>
         )}
+
+        {/* Tasks Waiting for Account Availability */}
+        {dashboardStats?.waiting_tasks?.total_waiting > 0 && (
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">
+              Waiting on Account Availability ({dashboardStats.waiting_tasks.total_waiting})
+            </h3>
+            <div className="space-y-3">
+              {Object.entries(dashboardStats.waiting_tasks.by_account || {}).map(([accountId, taskIds]) => (
+                <div key={accountId} className="border border-amber-200 rounded-lg p-4 bg-amber-50">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <ClockIcon className="h-5 w-5 text-amber-500" />
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          Account: {accountId.length > 20 ? `${accountId.substring(0, 20)}...` : accountId}
+                        </div>
+                        <div className="text-sm text-amber-700">
+                          {taskIds.length} task{taskIds.length !== 1 ? 's' : ''} waiting
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      Waiting on Account
+                    </span>
+                  </div>
+                  
+                  {/* Show waiting task IDs (limited to first 3) */}
+                  <div className="text-xs text-gray-600 mt-2">
+                    Tasks: {taskIds.slice(0, 3).join(', ')}
+                    {taskIds.length > 3 && ` (+${taskIds.length - 3} more)`}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-4 p-3 bg-blue-50 rounded-md">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <ExclamationTriangleIcon className="h-4 w-4 text-blue-400" />
+                </div>
+                <div className="ml-2 text-xs text-blue-700">
+                  <strong>Note:</strong> These tasks are waiting because their assigned account is currently 
+                  running another task or is in cooldown. They will automatically start when the account becomes available.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
