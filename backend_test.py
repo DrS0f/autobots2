@@ -445,7 +445,7 @@ class Phase5BackendTester:
                     if status == LicenseStatus.OK:
                         self.log_test_result("License Client - Valid Key", True, "Client correctly validated license")
                     else:
-                        self.log_test_result("License Client - Valid Key", False, error=f"Wrong status: {client.status}")
+                        self.log_test_result("License Client - Valid Key", False, error=f"Wrong status: {status}")
             except Exception as e:
                 self.log_test_result("License Client - Valid Key", False, error=str(e))
     
