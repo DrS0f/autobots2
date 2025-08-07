@@ -94,6 +94,31 @@ class SystemStats(BaseModel):
     active_tasks: Dict[str, Any]
     recent_results: List[Dict[str, Any]]
 
+# Phase 4 Models
+class SystemSettingsUpdate(BaseModel):
+    reengagement_days: Optional[int] = Field(None, ge=1, le=365, description="Days before re-engagement allowed")
+    rate_limit_steps: Optional[List[int]] = Field(None, description="Backoff steps in seconds for rate limits")
+    cooldown_after_consecutive: Optional[int] = Field(None, ge=1, le=10, description="Consecutive errors before cooldown")
+    cooldown_minutes: Optional[int] = Field(None, ge=1, le=1440, description="Cooldown duration in minutes")
+
+class InteractionEventQuery(BaseModel):
+    account_id: Optional[str] = None
+    target_username: Optional[str] = None
+    action: Optional[str] = None
+    status: Optional[str] = None
+    from_date: Optional[datetime] = None
+    to_date: Optional[datetime] = None
+    limit: int = Field(100, ge=1, le=1000)
+    skip: int = Field(0, ge=0)
+
+class ExportRequest(BaseModel):
+    format: str = Field("csv", description="Export format: csv or json")
+    account_id: Optional[str] = None
+    action: Optional[str] = None
+    status: Optional[str] = None
+    from_date: Optional[datetime] = None
+    to_date: Optional[datetime] = None
+
 # Basic API endpoints
 @api_router.get("/")
 async def root():
