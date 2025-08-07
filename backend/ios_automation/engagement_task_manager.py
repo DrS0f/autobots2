@@ -19,6 +19,17 @@ from .human_behavior import HumanBehaviorEngine, HumanBehaviorProfile
 from .account_execution_manager import get_execution_manager, AccountExecutionState
 from .task_manager import TaskPriority
 
+# Import for license checking
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from license_client import license_client
+except ImportError:
+    license_client = None
+
+logger = logging.getLogger(__name__)
+
 class EngagementTaskQueue:
     """FIFO task queue specifically for engagement tasks"""
     
