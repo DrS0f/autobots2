@@ -201,6 +201,9 @@ class DatabaseManager:
             })
             
             if result:
+                # Remove MongoDB _id field before creating dataclass
+                result.pop('_id', None)
+                
                 # Convert back to dataclass
                 latest = LatestInteraction(**result)
                 
