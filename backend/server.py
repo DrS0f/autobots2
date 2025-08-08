@@ -1038,12 +1038,19 @@ async def update_workflow_template(template_id: str, updates: Dict[str, Any]):
 async def delete_workflow_template(template_id: str):
     """Delete workflow template"""
     try:
+        # Check if template exists first
+        template = await workflow_manager.get_workflow_template(template_id)
+        if not template:
+            raise HTTPException(status_code=404, detail="Workflow template not found")
+        
         success = await workflow_manager.delete_workflow_template(template_id)
         if success:
             return {"success": True, "message": "Workflow template deleted successfully"}
         else:
-            raise HTTPException(status_code=404, detail="Workflow template not found")
+            raise HTTPException(status_code=500, detail="Failed to delete workflow template")
             
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error deleting workflow template: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete workflow template: {str(e)}")
