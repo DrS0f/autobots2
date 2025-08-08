@@ -10,7 +10,8 @@ import {
   ChatBubbleLeftRightIcon,
   CogIcon,
   DocumentTextIcon,
-  KeyIcon
+  KeyIcon,
+  RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
