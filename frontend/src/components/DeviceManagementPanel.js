@@ -33,6 +33,20 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const loadDeviceQueues = async () => {
+    setLoadingQueues(true);
+    try {
+      const response = await apiClient.getAllDeviceQueues();
+      if (response.success) {
+        setDeviceQueues(response.device_queues);
+      }
+    } catch (error) {
+      console.error('Error loading device queues:', error);
+    } finally {
+      setLoadingQueues(false);
+    }
+  };
+
   const loadAccountStates = async () => {
     setLoadingStates(true);
     try {
