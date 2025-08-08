@@ -142,10 +142,25 @@ const Dashboard = () => {
   const handleCreateTask = async (taskData) => {
     try {
       const response = await apiClient.createDeviceBoundTask(taskData);
-      toast.success('Mock task created successfully!');
+      
+      // Enhanced feedback
+      feedbackManager.show({
+        type: 'success',
+        title: 'Task Created Successfully',
+        message: `Mock task for @${taskData.target_username || 'user'} has been created and queued for device ${taskData.device_id}`,
+        autoHide: true,
+        duration: 4000
+      });
+      
       fetchDashboardStats();
     } catch (error) {
-      toast.error('Failed to create task');
+      feedbackManager.show({
+        type: 'error',
+        title: 'Task Creation Failed',
+        message: 'There was an error creating the task. Please try again.',
+        autoHide: true,
+        duration: 5000
+      });
     }
   };
 
@@ -162,15 +177,33 @@ const Dashboard = () => {
         );
         
         if (deployResponse.success) {
-          toast.success(`Mock workflow deployed to ${selectedDevices.length} devices!`);
+          feedbackManager.show({
+            type: 'success',
+            title: 'Workflow Deployed Successfully',
+            message: `"${templateData.name}" workflow has been deployed to ${selectedDevices.length} device${selectedDevices.length > 1 ? 's' : ''}`,
+            autoHide: true,
+            duration: 4000
+          });
         }
       } else {
-        toast.success('Mock workflow template created!');
+        feedbackManager.show({
+          type: 'success',
+          title: 'Workflow Template Created',
+          message: `"${templateData.name}" workflow template has been saved`,
+          autoHide: true,
+          duration: 3000
+        });
       }
       
       fetchDashboardStats();
     } catch (error) {
-      toast.error('Failed to create workflow');
+      feedbackManager.show({
+        type: 'error',
+        title: 'Workflow Creation Failed',
+        message: 'There was an error creating the workflow. Please try again.',
+        autoHide: true,
+        duration: 5000
+      });
     }
   };
 
