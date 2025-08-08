@@ -166,54 +166,57 @@ backend:
         comment: "Implementing safe mode to prevent actual task execution during development."
 
 frontend:
-  - task: "License Management Panel"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LicensePanel.js"
+  - task: "Workflows Tab UI"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/WorkflowPanel.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Created comprehensive license management UI with real-time status display, manual verification trigger, expiry countdown, customer/plan info display, and configuration guidance for LICENSE_KEY setup."
-      - working: true
-        agent: "testing"
-        comment: "✅ COMPREHENSIVE LICENSE PANEL TESTING COMPLETED: Tested both 'No License Required' and 'Locked' states successfully. Panel displays correct status badges (blue for no license, red for locked), shows appropriate configuration guidance when no license is configured, hides configuration section in locked state, displays verification info with all required fields (Last Verification, Verify Interval, Expires At, Grace Days), manual refresh and verify buttons work correctly with proper loading states, real-time updates every 30 seconds, responsive design works across desktop/tablet/mobile viewports. All API integrations functional with proper error handling."
+        comment: "Creating new Workflows tab for template creation, management, and multi-device deployment."
 
-  - task: "Global License Banner"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LicenseBanner.js"
+  - task: "Device Queue Visualization"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/DeviceManagementPanel.js"
     stuck_count: 0
-    priority: "high"  
+    priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Created global license status banner with color-coded warnings (blue->orange->red), automatic display for license issues, dismissible notifications, and expiry countdown. Shows locked/grace/expiring states."
-      - working: true
-        agent: "testing"
-        comment: "✅ GLOBAL LICENSE BANNER TESTING COMPLETED: Banner correctly hidden in 'no license required' mode and properly displays in 'locked' state with red background and 'System Locked' message. Dismiss functionality works perfectly - banner disappears when X button is clicked. Color-coded states implemented (red for locked system). Banner shows appropriate warning messages and customer ID when available. Responsive design verified across all screen sizes. Auto-refresh every 60 seconds working correctly."
+        comment: "Adding per-device queue length, running tasks, next run ETA, and rate window counters to device cards."
 
-  - task: "License Tab Integration"
-    implemented: true
-    working: true
-    file: "frontend/src/components/Dashboard.js, App.js"
+  - task: "Device Selector in Tasks"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/TaskManagementPanel.js"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Added License tab to main dashboard navigation with KeyIcon. Integrated LicenseBanner into main App component above router. Updated API client with license status and verify endpoints."
-      - working: true
-        agent: "testing"
-        comment: "✅ LICENSE TAB INTEGRATION TESTING COMPLETED: License tab with KeyIcon appears correctly in dashboard navigation alongside existing tabs (Task Management, Engagement Crawler, Devices, etc.). Tab switching works seamlessly - clicking License tab loads LicensePanel component without issues. Mobile navigation dropdown includes License option and works properly. LicenseBanner integration in App.js works correctly - banner appears above router content when license issues exist. Dashboard stats integration confirmed - license status updates with 5-second refresh interval."
+        comment: "Adding required device selector to task creation form with queue position display."
 
-  - task: "API Client License Methods"
-    implemented: true
-    working: true
+  - task: "Safe Mode Banner"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/SafeModeBanner.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Creating global banner to indicate safe mode is active and tasks are in simulation mode."
+
+  - task: "API Client Updates"
+    implemented: false
+    working: "NA"
     file: "frontend/src/services/api.js"
     stuck_count: 0
     priority: "medium"
@@ -221,10 +224,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Added getLicenseStatus() and verifyLicense() methods to API client for frontend-backend license communication."
-      - working: true
-        agent: "testing"
-        comment: "✅ API CLIENT LICENSE METHODS TESTING COMPLETED: Both getLicenseStatus() and verifyLicense() methods working perfectly. During testing detected 8+ successful license API calls including GET /api/license/status and POST /api/license/verify. API calls return proper responses with license status data. Error handling works correctly when license server is unreachable. API integration supports both 'no license required' and 'locked' states. Network monitoring confirmed all license-related API calls use correct endpoints with proper HTTP methods and response codes (200 OK)."
+        comment: "Adding new API methods for workflows and device queues endpoints."
 
 metadata:
   created_by: "main_agent"
