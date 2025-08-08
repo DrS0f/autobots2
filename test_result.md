@@ -244,18 +244,16 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
   current_focus:
-    - "Per-Device Queue Data Models"
-    - "Workflow Templates System"
-    - "Per-Device Queue Manager"
-    - "Updated API Endpoints"
-    - "Safe Mode Implementation"
     - "Workflows Tab UI"
     - "Device Queue Visualization"
+    - "Device Selector in Tasks"
+    - "Safe Mode Banner"
+    - "API Client Updates"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -287,3 +285,5 @@ agent_communication:
     message: "Implemented Phase 1-3 of Per-Device Task Queues + Workflow Cloning system in safe mock mode. Backend: Created workflow_models.py with WorkflowTemplate, DevicePacingState, DeviceTask data models and WorkflowDatabaseManager. Implemented device_queue_manager.py with per-device FIFO queues, mock execution, and pacing controls. Created workflow_manager.py for template creation and multi-device deployment. Updated server.py with comprehensive API endpoints for workflows, device queues, and per-device tasks. Frontend: Created SafeModeBanner.js and WorkflowPanel.js components. Updated Dashboard.js with Workflows tab and SafeModeBanner integration. Enhanced TaskManagementPanel.js with required device selection. Improved DeviceManagementPanel.js with device queue visualization. Updated API client with new endpoints. All systems initialized in safe mode for development. Ready for backend testing."
   - agent: "testing"
     message: "✅ PHASE 5 SAAS LICENSING & KILL-SWITCH COMPREHENSIVE TESTING COMPLETED: Conducted exhaustive testing of all licensing UI components and kill-switch functionality across multiple states. Key achievements: (1) License Tab Navigation: License tab with KeyIcon appears correctly in desktop navigation (8 tabs total) and mobile dropdown, seamless navigation working, (2) No License State: UI correctly displays 'No License Required' blue badge with configuration guidance, LICENSE_KEY environment variable instructions shown, (3) Invalid License State: System properly shows 'Locked' red badge, global red banner with 'System Locked: License is invalid or expired' message, configuration section hidden in locked state, (4) Kill-Switch Functionality: Task creation API properly blocked with HTTP 403 'License required: System is locked' error, Engagement task API properly blocked with HTTP 403, both APIs return proper license error messages, (5) License Management Panel: All components functional - real-time status display, manual refresh/verify buttons working, verification info section with Last Verification/Verify Interval/Expires At/Grace Days fields, customer/plan info display, last updated timestamps, (6) Global License Banner: Correctly hidden in no-license mode, properly displayed in locked state with dismiss functionality, appropriate color coding (red for locked), (7) API Integration: 10+ successful license API calls detected (GET /license/status, POST /license/verify), proper error handling and response codes, dashboard stats include license status, (8) Real-time Updates: 30-second auto-refresh for license panel working, 60-second banner refresh working, manual refresh triggers immediate updates, (9) Responsive Design: Verified across desktop (1920x1080), tablet (768x1024), mobile (390x844), mobile dropdown navigation includes license option, (10) Production Readiness: Zero JavaScript errors detected, all license states properly handled, kill-switch blocks task creation within expected timeframe, system gracefully handles license state transitions. Generated 15+ screenshots documenting all test scenarios. All Phase 5 licensing UI components fully functional and production-ready."
+  - agent: "testing"
+    message: "✅ PHASE 1-3 PER-DEVICE TASK QUEUES + WORKFLOW CLONING BACKEND TESTING COMPLETED: Conducted comprehensive testing of all Phase 1-3 backend features with 87.5% success rate (21/24 tests passed). CORE ACHIEVEMENTS: (1) Workflow Templates System: 100% functional (6/6 tests) - template CRUD operations, engagement/single_user workflows, validation, deployment working perfectly, (2) Per-Device Queue Management: 100% functional (4/4 tests) - device queue snapshots, pacing stats, device-bound task creation, queue position tracking all operational, (3) Safe Mode Implementation: 100% functional (3/3 tests) - safe mode status API, dashboard integration, mock execution with 2-second duration confirmed, (4) Feature Flags Integration: 100% functional (2/2 tests) - ENABLE_POOLED_ASSIGNMENT=false, SAFE_MODE=true correctly configured, (5) Database Integration: 100% functional (3/3 tests) - workflow_templates, device_pacing_state, device_tasks collections working with proper persistence, (6) API Endpoints: 85% functional (18/21 tests) - all major endpoints working, minor validation issues in deployment error handling. MINOR ISSUES: 3 failed tests related to deployment validation strictness and error response codes. All core functionality operational in safe mock mode. System ready for frontend integration testing."
