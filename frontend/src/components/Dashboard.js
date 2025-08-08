@@ -356,6 +356,7 @@ const Dashboard = () => {
             <TaskManagementPanel 
               dashboardStats={dashboardStats} 
               onRefresh={fetchDashboardStats}
+              onOpenTaskWizard={() => setShowTaskWizard(true)}
             />
           )}
           {activeTab === 'workflows' && (
