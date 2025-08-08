@@ -13,6 +13,8 @@ import {
 import toast from 'react-hot-toast';
 import { apiClient } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
+import QueueInsights from './QueueInsights';
+import SkeletonLoader, { DeviceSkeleton } from './SkeletonLoader';
 
 const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
   const [discovering, setDiscovering] = useState(false);
