@@ -316,6 +316,9 @@ const Dashboard = () => {
       {/* Status Strip - Fixed at top */}
       <StatusStrip dashboardStats={dashboardStats} />
       
+      {/* Fallback Banner - For devices in Safe Mode fallback */}
+      <FallbackBanner />
+      
       {/* Session Recovery Banner - Below status strip */}
       {showSessionBanner && (
         <SessionRecoveryBanner
