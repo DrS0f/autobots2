@@ -426,34 +426,43 @@ const handleConfirmationFlow = async (confirmationId, operationType) => {
   });
 };
 
-// Helper functions for mock data generation
+// Helper functions for mock data generation (enhanced for Phase 4)
 const generateMockDevices = () => [
   {
     udid: 'mock_device_001',
-    name: 'iPhone 12 Pro',
+    name: 'iPhone 12 Pro (Safe Mode)',
     status: 'ready',
     ios_version: '15.7',
     connection_port: 9100,
     last_seen: new Date().toISOString(),
-    battery_level: Math.floor(Math.random() * 40) + 60 // 60-100%
+    battery_level: Math.floor(Math.random() * 40) + 60,
+    safe_mode: true,
+    fallback_mode: false,
+    automation_ready: true
   },
   {
     udid: 'mock_device_002', 
-    name: 'iPhone 13 Mini',
+    name: 'iPhone 13 Mini (Safe Mode)',
     status: Math.random() > 0.7 ? 'busy' : 'ready',
     ios_version: '16.2',
     connection_port: 9101,
     last_seen: new Date().toISOString(),
-    battery_level: Math.floor(Math.random() * 40) + 60
+    battery_level: Math.floor(Math.random() * 40) + 60,
+    safe_mode: true,
+    fallback_mode: false,
+    automation_ready: true
   },
   {
     udid: 'mock_device_003',
-    name: 'iPad Pro',
+    name: 'iPad Pro (Safe Mode)',
     status: Math.random() > 0.9 ? 'error' : 'ready',
     ios_version: '16.3',
     connection_port: 9102,
     last_seen: new Date().toISOString(),
-    battery_level: Math.floor(Math.random() * 40) + 60
+    battery_level: Math.floor(Math.random() * 40) + 60,
+    safe_mode: true,
+    fallback_mode: false,
+    automation_ready: Math.random() > 0.1
   }
 ];
 
@@ -471,17 +480,26 @@ const generateMockPacingStats = () => ({
   cooldown_until: Math.random() > 0.8 ? new Date(Date.now() + Math.random() * 900000).toISOString() : null
 });
 
-// Main data source router
+// Main data source router with enhanced dual-mode support
 export const getDataSource = () => {
   return DATA_SOURCE_CONFIG.SAFE_MODE ? mockDataSources : liveDataSources;
 };
 
-// Feature flag checker
+// Enhanced feature flag checker
 export const isFeatureEnabled = (feature) => {
   return DATA_SOURCE_CONFIG.FEATURES[feature] || false;
 };
 
-// Interval configuration getter
+// Mode status checker
+export const isSafeModeActive = () => {
+  return DATA_SOURCE_CONFIG.SAFE_MODE;
+};
+
+export const isLiveModeActive = () => {
+  return !DATA_SOURCE_CONFIG.SAFE_MODE;
+};
+
+// Interval configuration getter with mode awareness
 export const getUpdateInterval = (type) => {
   const intervals = DATA_SOURCE_CONFIG.SAFE_MODE 
     ? DATA_SOURCE_CONFIG.MOCK_INTERVALS 
@@ -490,31 +508,57 @@ export const getUpdateInterval = (type) => {
   return intervals[type] || 5000;
 };
 
+// Enhanced error handling and fallback notification
+export const notifyFallbackTriggered = (deviceId, reason) => {
+  // Emit custom event for components to react
+  window.dispatchEvent(new CustomEvent('deviceFallbackTriggered', { 
+    detail: { deviceId, reason } 
+  }));
+  
+  console.warn(`Device ${deviceId} switched to fallback mode: ${reason}`);
+};
+
+// Mode transition helpers
+export const prepareForModeSwitch = (targetMode) => {
+  console.log(`Preparing to switch to ${targetMode} mode...`);
+  
+  // Clear any cached data that might be mode-specific
+  if (typeof window !== 'undefined') {
+    // Clear relevant cache keys
+    const cacheKeys = Object.keys(localStorage).filter(key => 
+      key.includes('dashboard_cache') || 
+      key.includes('device_cache') ||
+      key.includes('queue_cache')
+    );
+    
+    cacheKeys.forEach(key => localStorage.removeItem(key));
+  }
+};
+
 /**
- * PHASE 4 TRANSITION CHECKLIST:
+ * PHASE 4 IMPLEMENTATION STATUS:
  * 
- * 1. Backend Implementation:
- *    - [ ] Implement /api/dashboard/live-stats endpoint
- *    - [ ] Implement /api/devices/{id}/status endpoint  
- *    - [ ] Implement /api/devices/{id}/queue/live endpoint
- *    - [ ] Implement /api/tasks/execute-live endpoint
- *    - [ ] Implement /api/workflows/{id}/deploy-live endpoint
+ * ✅ COMPLETED:
+ * - Dual-mode configuration system with localStorage persistence
+ * - Enhanced mock data sources with mode indicators
+ * - Live data sources with fallback handling
+ * - User confirmation system for live operations
+ * - Feature flag system for gradual rollout
+ * - Error handling and auto-fallback mechanisms
+ * - Mode switching utilities and event system
  * 
- * 2. Device Integration:
- *    - [ ] Set up iOS device connections
- *    - [ ] Implement device discovery service
- *    - [ ] Add device health monitoring
- *    - [ ] Configure Instagram automation libraries
+ * 🔄 INTEGRATION POINTS:
+ * - Backend API endpoints for live operations (/api/*-live)
+ * - Device discovery and initialization endpoints
+ * - Fallback device management endpoints
+ * - Operation confirmation endpoints
+ * - Mode status and configuration endpoints
  * 
- * 3. Configuration Changes:
- *    - [ ] Set SAFE_MODE to false
- *    - [ ] Enable feature flags gradually
- *    - [ ] Update API endpoints in liveDataSources
- *    - [ ] Configure live update intervals
- * 
- * 4. Testing & Rollout:
- *    - [ ] Test with single device first
- *    - [ ] Validate queue management with real tasks
- *    - [ ] Monitor error handling and recovery
- *    - [ ] Gradual rollout to all devices
+ * 📋 NEXT STEPS:
+ * 1. Implement backend live API endpoints
+ * 2. Add UI toggle for Safe Mode ↔ Live Mode
+ * 3. Create device discovery and setup interface
+ * 4. Implement fallback notification system
+ * 5. Add comprehensive logging and audit trail
+ * 6. Build testing framework for dual-mode validation
  */
