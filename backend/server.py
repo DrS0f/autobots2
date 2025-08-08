@@ -1171,9 +1171,9 @@ async def get_safe_mode_status():
 @app.on_event("startup")
 async def startup_event():
     """Initialize system on startup"""
-    global device_queue_manager, workflow_manager
+    global device_queue_manager, workflow_manager, dual_mode_handler, live_device_manager
     
-    logger.info("Starting iOS Instagram Automation API")
+    logger.info("Starting iOS Instagram Automation API - Phase 4")
     
     try:
         # Start license client first
@@ -1197,6 +1197,17 @@ async def startup_event():
         workflow_manager = get_workflow_manager()
         await init_workflow_manager()
         logger.info("Workflow manager initialized")
+        
+        # Initialize Phase 4 Dual Mode Handler
+        dual_mode_handler = get_dual_mode_handler()
+        await init_dual_mode_handler()
+        logger.info("Dual Mode Handler initialized")
+        
+        # Initialize Live Device Manager if needed
+        if dual_mode_handler.config.is_live_mode_active():
+            live_device_manager = get_live_device_manager()
+            await init_live_device_manager()
+            logger.info("Live Device Manager initialized")
         
         # Discover devices on startup
         devices = await device_manager.discover_devices()
