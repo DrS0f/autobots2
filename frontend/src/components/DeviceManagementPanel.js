@@ -19,6 +19,8 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
   const [initializing, setInitializing] = useState({});
   const [accountStates, setAccountStates] = useState({});
   const [loadingStates, setLoadingStates] = useState(false);
+  const [deviceQueues, setDeviceQueues] = useState({});
+  const [loadingQueues, setLoadingQueues] = useState(false);
 
   // Load account states
   useEffect(() => {
