@@ -1,0 +1,231 @@
+{
+  "total_tests": 21,
+  "passed_tests": 21,
+  "failed_tests": 0,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "test_name": "Dashboard Stats API",
+      "success": true,
+      "details": "All required fields present, safe mode: True",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.474055",
+      "performance_ms": 64
+    },
+    {
+      "test_name": "Device Status Structure",
+      "success": true,
+      "details": "Total: 0, Ready: 0, Busy: 0, Error: 0",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.493203",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Queue Status Structure",
+      "success": true,
+      "details": "Total: 0, Pending: 0, Running: 0",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.553512",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Safe Mode Status API",
+      "success": true,
+      "details": "Safe mode: True, Mock completed: 0",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.584025",
+      "performance_ms": 30
+    },
+    {
+      "test_name": "Safe Mode Consistency",
+      "success": true,
+      "details": "Consistent safe mode status: True",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.632986",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Device Queues API",
+      "success": true,
+      "details": "Retrieved 3 device queues, insights: 1/3",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.655222",
+      "performance_ms": 21
+    },
+    {
+      "test_name": "Device Queue ETA",
+      "success": true,
+      "details": "Queue: 0, ETA: None, Pacing available: True",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.714057",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Workflow Creation Feedback",
+      "success": true,
+      "details": "Template created with proper feedback structure",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.781543",
+      "performance_ms": 67
+    },
+    {
+      "test_name": "Workflow Deployment Feedback",
+      "success": true,
+      "details": "Deployed to 2/2 devices, 2 tasks created",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.827140",
+      "performance_ms": 45
+    },
+    {
+      "test_name": "Task Creation Feedback",
+      "success": true,
+      "details": "Task created on device mock_device_001, queue position: 2",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.850603",
+      "performance_ms": 23
+    },
+    {
+      "test_name": "Traditional Task Feedback",
+      "success": true,
+      "details": "Traditional task created with proper feedback",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.872453",
+      "performance_ms": 21
+    },
+    {
+      "test_name": "Error Response Structure",
+      "success": true,
+      "details": "Error response has proper structure for ActionFeedback",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.889836",
+      "performance_ms": 17
+    },
+    {
+      "test_name": "Task Error Handling",
+      "success": true,
+      "details": "Invalid task properly rejected with error details",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.915156",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Deployment Error Handling",
+      "success": true,
+      "details": "Non-existent template properly rejected with 404",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.933369",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Settings for Session",
+      "success": true,
+      "details": "Settings available for localStorage persistence",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.955271",
+      "performance_ms": 21
+    },
+    {
+      "test_name": "Workflow Session Data",
+      "success": true,
+      "details": "Workflows have session recovery data: 4/4 fields",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:05.974523",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Dashboard Performance",
+      "success": true,
+      "details": "Average response time: 17ms (< 1000ms target)",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:07.527265",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Queue Insights Performance",
+      "success": true,
+      "details": "Queue data response time: 17ms",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:07.545306",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Workflow Performance",
+      "success": true,
+      "details": "Average workflow operation time: 56ms",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:07.545352",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Mock Data Structure",
+      "success": true,
+      "details": "Mock data consistent: 0 completed, duration: 30",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:07.562890",
+      "performance_ms": null
+    },
+    {
+      "test_name": "Mock Device Data Consistency",
+      "success": true,
+      "details": "Found 3 mock devices with consistent structure",
+      "error": "",
+      "timestamp": "2025-08-08T13:58:07.579169",
+      "performance_ms": null
+    }
+  ],
+  "performance_metrics": [
+    {
+      "endpoint": "Dashboard Stats API",
+      "response_time_ms": 64,
+      "timestamp": "2025-08-08T13:58:05.474068"
+    },
+    {
+      "endpoint": "Safe Mode Status API",
+      "response_time_ms": 30,
+      "timestamp": "2025-08-08T13:58:05.584035"
+    },
+    {
+      "endpoint": "Device Queues API",
+      "response_time_ms": 21,
+      "timestamp": "2025-08-08T13:58:05.655232"
+    },
+    {
+      "endpoint": "Workflow Creation Feedback",
+      "response_time_ms": 67,
+      "timestamp": "2025-08-08T13:58:05.781553"
+    },
+    {
+      "endpoint": "Workflow Deployment Feedback",
+      "response_time_ms": 45,
+      "timestamp": "2025-08-08T13:58:05.827147"
+    },
+    {
+      "endpoint": "Task Creation Feedback",
+      "response_time_ms": 23,
+      "timestamp": "2025-08-08T13:58:05.850611"
+    },
+    {
+      "endpoint": "Traditional Task Feedback",
+      "response_time_ms": 21,
+      "timestamp": "2025-08-08T13:58:05.872462"
+    },
+    {
+      "endpoint": "Error Response Structure",
+      "response_time_ms": 17,
+      "timestamp": "2025-08-08T13:58:05.889845"
+    },
+    {
+      "endpoint": "Settings for Session",
+      "response_time_ms": 21,
+      "timestamp": "2025-08-08T13:58:05.955280"
+    }
+  ],
+  "created_templates": [
+    "04120020-76c0-4883-bd63-251b0a4ce9f7"
+  ],
+  "created_tasks": [
+    "5cf18739-25bf-4570-96bc-d281d726983a",
+    "92f182fa-c1b1-4c38-b2b3-69831d1ca0dd",
+    "cabed82d-d843-4563-a41d-b24c2913fee6"
+  ]
+}
