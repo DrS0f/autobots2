@@ -997,6 +997,15 @@ async def create_workflow_template(template_data: WorkflowTemplateCreate):
 async def deploy_workflow_to_devices(template_id: str, deploy_data: WorkflowDeployRequest):
     """Deploy workflow template to multiple devices"""
     try:
+        # Validate device_ids list
+        if not deploy_data.device_ids or len(deploy_data.device_ids) == 0:
+            raise HTTPException(status_code=400, detail="device_ids list cannot be empty")
+        
+        # Check if template exists first
+        template = await workflow_manager.get_workflow_template(template_id)
+        if not template:
+            raise HTTPException(status_code=404, detail="Workflow template not found")
+        
         result = await workflow_manager.deploy_workflow_to_devices(
             template_id=template_id,
             device_ids=deploy_data.device_ids,
@@ -1005,6 +1014,8 @@ async def deploy_workflow_to_devices(template_id: str, deploy_data: WorkflowDepl
         
         return result
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error deploying workflow to devices: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to deploy workflow: {str(e)}")
