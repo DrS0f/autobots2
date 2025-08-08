@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
-import OperatorDashboard from './components/OperatorDashboard';
+import OperatorDashboardRefined from './components/OperatorDashboardRefined';
 
 function App() {
   return (
@@ -33,7 +33,7 @@ function App() {
       />
       <Router>
         <Routes>
-          <Route path="/" element={<OperatorDashboard />} />
+          <Route path="/" element={<OperatorDashboardRefined />} />
         </Routes>
       </Router>
     </div>
