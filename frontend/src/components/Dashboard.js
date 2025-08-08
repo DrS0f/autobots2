@@ -55,6 +55,7 @@ const Dashboard = () => {
   const [showWorkflowWizard, setShowWorkflowWizard] = useState(false);
   const [currentScenario, setCurrentScenario] = useState('healthy');
   const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
+  const [showSessionBanner, setShowSessionBanner] = useState(false);
 
   // Fetch dashboard stats
   const fetchDashboardStats = async () => {
