@@ -84,6 +84,11 @@ const Dashboard = () => {
       setHasSeenWelcome(true);
     }
 
+    // Check for session recovery
+    setTimeout(() => {
+      setShowSessionBanner(true);
+    }, 500);
+
     return () => clearInterval(interval);
   }, []);
 
