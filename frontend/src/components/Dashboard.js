@@ -211,15 +211,33 @@ const Dashboard = () => {
     try {
       if (systemRunning) {
         await apiClient.stopSystem();
-        toast.success('System stopped');
+        feedbackManager.show({
+          type: 'info',
+          title: 'System Stopped',
+          message: 'All automation tasks have been paused',
+          autoHide: true,
+          duration: 3000
+        });
       } else {
         await apiClient.startSystem();
-        toast.success('System started');
+        feedbackManager.show({
+          type: 'success',
+          title: 'System Started',
+          message: 'Automation system is now active and processing tasks',
+          autoHide: true,
+          duration: 3000
+        });
       }
       fetchDashboardStats();
     } catch (error) {
       console.error('Failed to toggle system:', error);
-      toast.error(`Failed to ${systemRunning ? 'stop' : 'start'} system`);
+      feedbackManager.show({
+        type: 'error',
+        title: 'System Toggle Failed',
+        message: `Failed to ${systemRunning ? 'stop' : 'start'} the automation system`,
+        autoHide: true,
+        duration: 4000
+      });
     }
   };
 
