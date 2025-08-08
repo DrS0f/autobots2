@@ -363,6 +363,7 @@ const Dashboard = () => {
             <WorkflowPanel 
               dashboardStats={dashboardStats} 
               onRefresh={fetchDashboardStats}
+              onOpenWorkflowWizard={() => setShowWorkflowWizard(true)}
             />
           )}
           {activeTab === 'engagement' && (
