@@ -161,6 +161,32 @@ const TaskManagementPanel = ({ dashboardStats, onRefresh }) => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Target Device <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={formData.device_id}
+                        onChange={(e) => setFormData({...formData, device_id: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        required
+                      >
+                        <option value="">Select a device...</option>
+                        {dashboardStats?.device_status?.devices
+                          ?.filter(device => device.status === 'ready')
+                          ?.map(device => (
+                          <option key={device.udid} value={device.udid}>
+                            {device.name} (iOS {device.ios_version}) - Port {device.connection_port}
+                          </option>
+                        ))}
+                      </select>
+                      {dashboardStats?.device_status?.ready_devices === 0 && (
+                        <div className="mt-1 text-xs text-red-600">
+                          No ready devices available. Initialize devices in the Devices tab.
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Task Priority
                       </label>
                       <select
