@@ -1235,7 +1235,9 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-    logger.info("Shutting down iOS Instagram Automation API")
+    global dual_mode_handler, live_device_manager
+    
+    logger.info("Shutting down iOS Instagram Automation API - Phase 4")
     
     try:
         # Stop task workers
@@ -1243,6 +1245,15 @@ async def shutdown_event():
         
         # Stop engagement workers
         await engagement_task_manager.stop_engagement_workers()
+        
+        # Cleanup Phase 4 Live Device Integration
+        if dual_mode_handler:
+            await dual_mode_handler.shutdown()
+            logger.info("Dual Mode Handler shutdown completed")
+        
+        if live_device_manager:
+            await live_device_manager.stop()
+            logger.info("Live Device Manager stopped")
         
         # Cleanup all devices
         for udid in device_manager.devices.keys():
