@@ -355,6 +355,29 @@ const Dashboard = () => {
                 currentScenario={currentScenario}
                 onScenarioChange={handleScenarioChange}
               />
+              
+              {/* Mode Toggle Button */}
+              <button
+                onClick={() => setShowModeToggle(!showModeToggle)}
+                className={`inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium transition-colors ${
+                  currentMode === 'safe' 
+                    ? 'text-yellow-700 bg-yellow-50 border-yellow-300' 
+                    : 'text-red-700 bg-red-50 border-red-300'
+                }`}
+                title="Toggle between Safe Mode and Live Mode"
+              >
+                {currentMode === 'safe' ? (
+                  <>
+                    <ShieldCheckIcon className="h-4 w-4 mr-2" />
+                    Safe Mode
+                  </>
+                ) : (
+                  <>
+                    <BoltIcon className="h-4 w-4 mr-2" />
+                    Live Mode
+                  </>
+                )}
+              </button>
 
               {/* System Status */}
               <div className="flex items-center space-x-2">
