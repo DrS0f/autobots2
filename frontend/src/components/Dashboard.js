@@ -134,8 +134,40 @@ const Dashboard = () => {
   // Scenario simulator handlers
   const handleScenarioChange = (scenarioId) => {
     setCurrentScenario(scenarioId);
-    // This would update mock data in a real implementation
-    toast.success(`Switched to "${scenarioId.replace('_', ' ')}" scenario`);
+    feedbackManager.show({
+      type: 'info',
+      title: 'Scenario Changed',
+      message: `Switched to "${scenarioId.replace('_', ' ')}" scenario for realistic testing`,
+      autoHide: true,
+      duration: 3000
+    });
+  };
+
+  // Session recovery handlers
+  const handleSessionRestore = (draft) => {
+    if (draft.type === 'task') {
+      // Restore task draft
+      setShowTaskWizard(true);
+      // TODO: Pass draft data to TaskWizard
+      feedbackManager.show({
+        type: 'info',
+        title: 'Session Restored',
+        message: `Restored your ${draft.title} from ${new Date(draft.timestamp).toLocaleString()}`,
+        autoHide: true,
+        duration: 3000
+      });
+    } else if (draft.type === 'workflow') {
+      // Restore workflow draft
+      setShowWorkflowWizard(true);
+      // TODO: Pass draft data to WorkflowWizard
+      feedbackManager.show({
+        type: 'info',
+        title: 'Session Restored',
+        message: `Restored your ${draft.title} from ${new Date(draft.timestamp).toLocaleString()}`,
+        autoHide: true,
+        duration: 3000
+      });
+    }
   };
 
   // Wizard handlers
