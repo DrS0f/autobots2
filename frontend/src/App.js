@@ -34,6 +34,7 @@ function App() {
         }}
       />
       <Router>
+        <SafeModeBanner />
         <LicenseBanner />
         <Routes>
           <Route path="/" element={<Dashboard />} />
