@@ -184,45 +184,246 @@ export const mockDataSources = {
   })
 };
 
-// Live data sources for Phase 4 (to be implemented)
+// Live data sources for Phase 4 - Real device integration
 export const liveDataSources = {
-  // TODO: Implement live dashboard stats API
+  // Live dashboard stats API
   getDashboardStats: async () => {
     const response = await fetch('/api/dashboard/live-stats');
+    if (!response.ok) {
+      throw new Error(`Dashboard API error: ${response.status}`);
+    }
     return response.json();
   },
 
-  // TODO: Implement live device status API
+  // Live device status API with fallback handling
   getDeviceStatus: async (deviceId) => {
-    const response = await fetch(`/api/devices/${deviceId}/status`);
-    return response.json();
+    try {
+      const url = deviceId ? `/api/devices/${deviceId}/status-live` : '/api/devices/status-live';
+      const response = await fetch(url, { 
+        timeout: DATA_SOURCE_CONFIG.LIVE_CONFIG.FALLBACK_TIMEOUT_MS 
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Device API error: ${response.status}`);
+      }
+      
+      return response.json();
+    } catch (error) {
+      console.warn('Live device status failed, using fallback:', error);
+      return mockDataSources.getDeviceStatus(deviceId);
+    }
   },
 
-  // TODO: Implement live queue management API
+  // Live queue management API
   getDeviceQueue: async (deviceId) => {
-    const response = await fetch(`/api/devices/${deviceId}/queue/live`);
-    return response.json();
+    try {
+      const response = await fetch(`/api/devices/${deviceId}/queue/live`, {
+        timeout: DATA_SOURCE_CONFIG.LIVE_CONFIG.FALLBACK_TIMEOUT_MS
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Queue API error: ${response.status}`);
+      }
+      
+      return response.json();
+    } catch (error) {
+      console.warn('Live queue data failed, using fallback:', error);
+      return mockDataSources.getDeviceQueue(deviceId);
+    }
   },
 
-  // TODO: Implement live task execution API
+  // Live task execution with confirmation support
   executeTask: async (taskData) => {
-    const response = await fetch('/api/tasks/execute-live', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taskData)
-    });
+    try {
+      const response = await fetch('/api/tasks/execute-live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...taskData,
+          confirmation_required: DATA_SOURCE_CONFIG.FEATURES.USER_CONFIRMATION
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Task execution error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Handle confirmation requirement
+      if (result.requires_confirmation) {
+        return await handleConfirmationFlow(result.confirmation_id, 'task');
+      }
+      
+      return result;
+      
+    } catch (error) {
+      if (DATA_SOURCE_CONFIG.FEATURES.AUTO_FALLBACK) {
+        console.warn('Live task execution failed, using fallback:', error);
+        return mockDataSources.executeTask(taskData);
+      }
+      throw error;
+    }
+  },
+
+  // Live workflow deployment with confirmation
+  deployWorkflow: async (templateId, deviceIds) => {
+    try {
+      const response = await fetch(`/api/workflows/${templateId}/deploy-live`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          device_ids: deviceIds,
+          confirmation_required: DATA_SOURCE_CONFIG.FEATURES.USER_CONFIRMATION
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Workflow deployment error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Handle confirmation requirement
+      if (result.requires_confirmation) {
+        return await handleConfirmationFlow(result.confirmation_id, 'workflow');
+      }
+      
+      return result;
+      
+    } catch (error) {
+      if (DATA_SOURCE_CONFIG.FEATURES.AUTO_FALLBACK) {
+        console.warn('Live workflow deployment failed, using fallback:', error);
+        return mockDataSources.deployWorkflow(templateId, deviceIds);
+      }
+      throw error;
+    }
+  },
+
+  // Live mode and feature status
+  getModeStatus: async () => {
+    try {
+      const response = await fetch('/api/system/mode-status');
+      if (!response.ok) {
+        throw new Error(`Mode status error: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.warn('Mode status failed, using defaults:', error);
+      return {
+        current_mode: 'live_mode',
+        live_mode_enabled: true,
+        features: DATA_SOURCE_CONFIG.FEATURES,
+        fallback_devices: []
+      };
+    }
+  },
+
+  // Device discovery and initialization
+  discoverDevices: async () => {
+    const response = await fetch('/api/devices/discover', { method: 'POST' });
+    if (!response.ok) {
+      throw new Error(`Device discovery error: ${response.status}`);
+    }
     return response.json();
   },
 
-  // TODO: Implement live workflow deployment API
-  deployWorkflow: async (templateId, deviceIds) => {
-    const response = await fetch(`/api/workflows/${templateId}/deploy-live`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device_ids: deviceIds })
+  initializeDevice: async (deviceId) => {
+    const response = await fetch(`/api/devices/${deviceId}/initialize`, { 
+      method: 'POST' 
     });
+    if (!response.ok) {
+      throw new Error(`Device initialization error: ${response.status}`);
+    }
+    return response.json();
+  },
+
+  // Fallback management
+  getFallbackDevices: async () => {
+    const response = await fetch('/api/devices/fallback');
+    if (!response.ok) {
+      throw new Error(`Fallback devices error: ${response.status}`);
+    }
+    return response.json();
+  },
+
+  clearDeviceFallback: async (deviceId) => {
+    const response = await fetch(`/api/devices/${deviceId}/clear-fallback`, {
+      method: 'POST'
+    });
+    if (!response.ok) {
+      throw new Error(`Clear fallback error: ${response.status}`);
+    }
     return response.json();
   }
+};
+
+// Confirmation handling for live operations
+const handleConfirmationFlow = async (confirmationId, operationType) => {
+  return new Promise((resolve, reject) => {
+    // Show confirmation dialog
+    const confirmDialog = document.createElement('div');
+    confirmDialog.innerHTML = `
+      <div class="fixed inset-0 z-50 overflow-y-auto" style="background: rgba(0,0,0,0.5)">
+        <div class="flex items-center justify-center min-h-screen px-4">
+          <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              🚨 Live Mode Confirmation Required
+            </h3>
+            <p class="text-gray-600 mb-6">
+              This operation will execute on real devices and perform actual Instagram interactions. 
+              Are you sure you want to proceed?
+            </p>
+            <div class="flex space-x-3">
+              <button id="confirm-btn" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                Yes, Execute Live
+              </button>
+              <button id="cancel-btn" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(confirmDialog);
+    
+    // Handle confirmation
+    document.getElementById('confirm-btn').onclick = async () => {
+      try {
+        const response = await fetch(`/api/operations/confirm/${confirmationId}`, {
+          method: 'POST'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Confirmation error: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        document.body.removeChild(confirmDialog);
+        resolve(result);
+        
+      } catch (error) {
+        document.body.removeChild(confirmDialog);
+        reject(error);
+      }
+    };
+    
+    // Handle cancellation
+    document.getElementById('cancel-btn').onclick = () => {
+      document.body.removeChild(confirmDialog);
+      reject(new Error('User cancelled live operation'));
+    };
+    
+    // Auto-timeout
+    setTimeout(() => {
+      if (document.body.contains(confirmDialog)) {
+        document.body.removeChild(confirmDialog);
+        reject(new Error('Confirmation timeout'));
+      }
+    }, DATA_SOURCE_CONFIG.LIVE_CONFIG.CONFIRMATION_TIMEOUT_MS);
+  });
 };
 
 // Helper functions for mock data generation
