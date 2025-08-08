@@ -83,6 +83,88 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Welcome modal handlers
+  const handleWelcomeClose = () => {
+    setShowWelcomeModal(false);
+    setHasSeenWelcome(true);
+    localStorage.setItem('hasSeenWelcome', 'true');
+  };
+
+  const handleStartTour = () => {
+    setShowWelcomeModal(false);
+    setShowGuidedTour(true);
+    setHasSeenWelcome(true);
+    localStorage.setItem('hasSeenWelcome', 'true');
+  };
+
+  const handleUseDemoData = () => {
+    setShowWelcomeModal(false);
+    setCurrentScenario('backlog_spike');
+    setHasSeenWelcome(true);
+    localStorage.setItem('hasSeenWelcome', 'true');
+    toast.success('Demo scenario loaded! Explore the interface with realistic data.');
+  };
+
+  const handleExploreManually = () => {
+    setShowWelcomeModal(false);
+    setHasSeenWelcome(true);
+    localStorage.setItem('hasSeenWelcome', 'true');
+  };
+
+  // Tour handlers
+  const handleTourClose = () => {
+    setShowGuidedTour(false);
+  };
+
+  const handleTourStepChange = (tabId) => {
+    if (tabId) {
+      setActiveTab(tabId);
+    }
+  };
+
+  // Scenario simulator handlers
+  const handleScenarioChange = (scenarioId) => {
+    setCurrentScenario(scenarioId);
+    // This would update mock data in a real implementation
+    toast.success(`Switched to "${scenarioId.replace('_', ' ')}" scenario`);
+  };
+
+  // Wizard handlers
+  const handleCreateTask = async (taskData) => {
+    try {
+      const response = await apiClient.createDeviceBoundTask(taskData);
+      toast.success('Mock task created successfully!');
+      fetchDashboardStats();
+    } catch (error) {
+      toast.error('Failed to create task');
+    }
+  };
+
+  const handleCreateWorkflow = async (templateData, selectedDevices) => {
+    try {
+      // First create the template
+      const templateResponse = await apiClient.createWorkflowTemplate(templateData);
+      
+      if (templateResponse.success && selectedDevices.length > 0) {
+        // Then deploy to selected devices
+        const deployResponse = await apiClient.deployWorkflowToDevices(
+          templateResponse.template_id,
+          { device_ids: selectedDevices }
+        );
+        
+        if (deployResponse.success) {
+          toast.success(`Mock workflow deployed to ${selectedDevices.length} devices!`);
+        }
+      } else {
+        toast.success('Mock workflow template created!');
+      }
+      
+      fetchDashboardStats();
+    } catch (error) {
+      toast.error('Failed to create workflow');
+    }
+  };
+
   const handleSystemToggle = async () => {
     try {
       if (systemRunning) {
