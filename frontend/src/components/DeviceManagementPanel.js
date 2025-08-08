@@ -22,10 +22,14 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
   const [deviceQueues, setDeviceQueues] = useState({});
   const [loadingQueues, setLoadingQueues] = useState(false);
 
-  // Load account states
+  // Load account states and device queues
   useEffect(() => {
     loadAccountStates();
-    const interval = setInterval(loadAccountStates, 10000); // Refresh every 10 seconds
+    loadDeviceQueues();
+    const interval = setInterval(() => {
+      loadAccountStates();
+      loadDeviceQueues();
+    }, 10000); // Refresh every 10 seconds
     return () => clearInterval(interval);
   }, []);
 
