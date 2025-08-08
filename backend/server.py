@@ -1237,6 +1237,10 @@ async def shutdown_event():
         db_manager = get_db_manager()
         await db_manager.close()
         
+        # Close workflow database connection
+        workflow_db_manager = get_workflow_db_manager()
+        await workflow_db_manager.close()
+        
         client.close()
         
     except Exception as e:
