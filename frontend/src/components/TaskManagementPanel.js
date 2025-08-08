@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
-  PlusIcon, 
-  XMarkIcon, 
   PlayIcon,
   ClockIcon,
   CheckCircleIcon,
