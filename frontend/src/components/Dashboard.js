@@ -15,7 +15,9 @@ import {
   Bars3Icon,
   QuestionMarkCircleIcon,
   StarIcon,
-  BeakerIcon
+  BeakerIcon,
+  ShieldCheckIcon,
+  BoltIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
