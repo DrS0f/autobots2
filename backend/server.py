@@ -55,6 +55,10 @@ device_manager = IOSDeviceManager()
 task_manager = TaskManager(device_manager)
 engagement_task_manager = EngagementTaskManager(device_manager)
 
+# Phase 1-3: Per-Device Queue System  
+device_queue_manager = None  # Will be initialized after device_manager
+workflow_manager = None      # Will be initialized after database
+
 # Pydantic Models
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
