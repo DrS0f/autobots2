@@ -105,53 +105,65 @@
 user_problem_statement: "Implement Phase 1–3 of Per-Device Task Queues + Workflow Cloning in safe mock mode: Build all schema, APIs, and UI changes needed for per-device queues and workflow cloning, but keep execution in mock/simulation mode so no live tasks run. This includes creating workflow_templates and device_pacing_state collections, extending tasks with required device_id and workflow_id fields, adding mock in-memory queues for each device, implementing new API endpoints (GET /api/devices/{udid}/queue, GET/POST /api/workflows, POST /api/workflows/{id}/deploy), updating UI with Workflows tab, device queue visualization, required device selector for tasks, and ENABLE_POOLED_ASSIGNMENT feature flag support. All in safe mock mode with global 'SAFE MODE ACTIVE' banner."
 
 backend:
-  - task: "License Server Implementation"
-    implemented: true
-    working: false
-    file: "licensing/server.py, licensing/license_service.py, licensing/models.py"
+  - task: "Per-Device Queue Data Models"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/database_models.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Created FastAPI license server in /licensing directory with JWT-based license management. Implemented endpoints for issue, verify, revoke operations. Added LicenseService for JWT handling and file-based storage. Created admin CLI tool for license management."
+        comment: "Creating new collections: workflow_templates and device_pacing_state. Extending tasks collection with device_id and workflow_id fields."
 
-  - task: "Backend License Integration"
-    implemented: true
-    working: false
-    file: "backend/license_client.py, backend/server.py"
+  - task: "Workflow Templates System"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/workflow_manager.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Integrated LicenseClient into main backend with background verification every 15 minutes. Added license checks to task creation endpoints (returns 403 when locked). Updated worker loops to pause when unlicensed. Added license status API endpoints."
+        comment: "Creating workflow template creation, management, and cloning functionality."
 
-  - task: "Task Worker License Enforcement"
-    implemented: true
-    working: false
-    file: "backend/ios_automation/task_manager.py, engagement_task_manager.py"
+  - task: "Per-Device Queue Manager"
+    implemented: false
+    working: "NA"
+    file: "backend/ios_automation/device_queue_manager.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Modified both TaskManager and EngagementTaskManager worker loops to check license status. Workers pause for 30 seconds when system is unlicensed. Task creation blocked with HTTP 403 when license invalid."
+        comment: "Creating mock device-specific FIFO queues with pacing controls."
 
-  - task: "License Status in Dashboard API"
-    implemented: true
-    working: false
+  - task: "Updated API Endpoints"
+    implemented: false
+    working: "NA"
     file: "backend/server.py"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: true
+    priority: "high"
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Added license_status field to SystemStats model and dashboard stats endpoint. License information now included in real-time dashboard updates."
+        comment: "Adding new workflow and device queue API endpoints with ENABLE_POOLED_ASSIGNMENT feature flag."
+
+  - task: "Safe Mode Implementation"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing safe mode to prevent actual task execution during development."
 
 frontend:
   - task: "License Management Panel"
