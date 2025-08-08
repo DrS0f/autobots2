@@ -1,0 +1,185 @@
+{
+  "total_tests": 24,
+  "passed_tests": 21,
+  "failed_tests": 3,
+  "success_rate": 87.5,
+  "results": [
+    {
+      "test_name": "List Workflow Templates",
+      "success": true,
+      "details": "Retrieved 0 templates",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.259319"
+    },
+    {
+      "test_name": "Create Engagement Template",
+      "success": true,
+      "details": "Created template: 3b55cf16-de2e-4583-9376-9a62d69e2f8b",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.278795"
+    },
+    {
+      "test_name": "Create Single User Template",
+      "success": true,
+      "details": "Created template: fa64b3d6-ae19-4860-bea5-5ee19bd04db9",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.300042"
+    },
+    {
+      "test_name": "Get Workflow Template",
+      "success": true,
+      "details": "Retrieved template: Test Engagement Workflow",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.322283"
+    },
+    {
+      "test_name": "Template Validation",
+      "success": true,
+      "details": "Invalid template correctly rejected",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.384395"
+    },
+    {
+      "test_name": "Delete Workflow Template",
+      "success": true,
+      "details": "Deleted template: fa64b3d6-ae19-4860-bea5-5ee19bd04db9",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.400403"
+    },
+    {
+      "test_name": "Deploy Workflow",
+      "success": true,
+      "details": "Deployed to 3/3 devices",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.473071"
+    },
+    {
+      "test_name": "Deploy Invalid Template",
+      "success": false,
+      "details": "",
+      "error": "Invalid template accepted: HTTP 200",
+      "timestamp": "2025-08-08T12:32:47.495315"
+    },
+    {
+      "test_name": "Deploy Empty Device List",
+      "success": false,
+      "details": "",
+      "error": "Empty device list accepted: HTTP 200",
+      "timestamp": "2025-08-08T12:32:47.520190"
+    },
+    {
+      "test_name": "Get Device Queue",
+      "success": true,
+      "details": "Device mock_device_001: 1 tasks queued",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.538451"
+    },
+    {
+      "test_name": "Get All Device Queues",
+      "success": true,
+      "details": "Retrieved 3 device queues, avg length: 1.0",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.555008"
+    },
+    {
+      "test_name": "Create Device-Bound Task",
+      "success": true,
+      "details": "Created task a823d144-2c13-4f31-9877-93c8be0ac985 for device mock_device_002",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.614352"
+    },
+    {
+      "test_name": "Queue Pacing Stats",
+      "success": true,
+      "details": "Pacing stats available: rate limits {'actions_per_hour': 60, 'sessions_per_day': 10}",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.636424"
+    },
+    {
+      "test_name": "Safe Mode Status",
+      "success": true,
+      "details": "Safe mode active: Task execution is disabled - running in simulation mode for development",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.657591"
+    },
+    {
+      "test_name": "Dashboard Safe Mode",
+      "success": true,
+      "details": "Safe mode status in dashboard",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:47.676537"
+    },
+    {
+      "test_name": "Mock Task Execution",
+      "success": true,
+      "details": "Mock execution system ready",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.694467"
+    },
+    {
+      "test_name": "Feature Flags",
+      "success": true,
+      "details": "ENABLE_POOLED_ASSIGNMENT=False, SAFE_MODE=True",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.725347"
+    },
+    {
+      "test_name": "Pooled Assignment Default",
+      "success": true,
+      "details": "ENABLE_POOLED_ASSIGNMENT correctly defaults to false",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.782712"
+    },
+    {
+      "test_name": "Database Persistence",
+      "success": true,
+      "details": "Found 1 persisted templates",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.801011"
+    },
+    {
+      "test_name": "Device Pacing State",
+      "success": true,
+      "details": "Device pacing states tracked in database",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.816418"
+    },
+    {
+      "test_name": "Device Tasks Collection",
+      "success": true,
+      "details": "Found 4 tasks in device queues",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.917372"
+    },
+    {
+      "test_name": "Invalid Template ID",
+      "success": false,
+      "details": "",
+      "error": "Expected 404, got 500",
+      "timestamp": "2025-08-08T12:32:50.937913"
+    },
+    {
+      "test_name": "Missing Required Fields",
+      "success": true,
+      "details": "Invalid template correctly rejected",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.965393"
+    },
+    {
+      "test_name": "Invalid Device ID",
+      "success": true,
+      "details": "Invalid device ID correctly rejected",
+      "error": "",
+      "timestamp": "2025-08-08T12:32:50.983027"
+    }
+  ],
+  "created_templates": [
+    "3b55cf16-de2e-4583-9376-9a62d69e2f8b"
+  ],
+  "created_tasks": [
+    "ca80ec31-46e3-4a4a-abbb-eea20160eddf",
+    "6c0736d7-3de6-4eab-8fae-f17464ef52c7",
+    "ff299e46-1779-46cb-b63b-5aeedbc9f20e",
+    "a823d144-2c13-4f31-9877-93c8be0ac985"
+  ]
+}
