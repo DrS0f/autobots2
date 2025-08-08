@@ -234,10 +234,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "License Server Implementation"
-    - "Backend License Integration" 
-    - "License Management Panel"
-    - "Global License Banner"
+    - "Per-Device Queue Data Models"
+    - "Workflow Templates System"
+    - "Per-Device Queue Manager"
+    - "Updated API Endpoints"
+    - "Safe Mode Implementation"
+    - "Workflows Tab UI"
+    - "Device Queue Visualization"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
