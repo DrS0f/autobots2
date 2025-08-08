@@ -147,7 +147,7 @@ const Dashboard = () => {
     });
   };
 
-  // Session recovery handlers
+  // Enhanced session recovery handlers
   const handleSessionRestore = (draft) => {
     if (draft.type === 'task') {
       // Restore task draft
@@ -172,6 +172,20 @@ const Dashboard = () => {
         duration: 3000
       });
     }
+  };
+
+  // Mode change handler
+  const handleModeChange = (mode) => {
+    setCurrentMode(mode);
+    fetchDashboardStats(); // Refresh data after mode change
+    
+    feedbackManager.show({
+      type: 'info',
+      title: 'Mode Changed',
+      message: `Switched to ${mode === 'safe' ? 'Safe' : 'Live'} Mode - Data will refresh automatically`,
+      autoHide: true,
+      duration: 4000
+    });
   };
 
   // Wizard handlers
