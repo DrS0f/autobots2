@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
 import OperatorDashboard from './components/OperatorDashboard';
-import LicenseBanner from './components/LicenseBanner';
-import SafeModeBanner from './components/SafeModeBanner';
 
 function App() {
   return (
@@ -34,8 +32,6 @@ function App() {
         }}
       />
       <Router>
-        <SafeModeBanner />
-        <LicenseBanner />
         <Routes>
           <Route path="/" element={<OperatorDashboard />} />
         </Routes>
