@@ -15,7 +15,7 @@ import requests
 import uuid
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://8f4ca915-6fb8-4b57-96c6-9759ceb90a20.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://4ef408ef-8dbe-4893-ba4f-68a32b4f29f2.preview.emergentagent.com')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
 class Phase13BackendTester:
