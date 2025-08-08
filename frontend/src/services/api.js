@@ -222,6 +222,65 @@ export const apiClient = {
     return response.data;
   },
 
+  // Per-Device Queue & Workflow Management endpoints
+  async getWorkflowTemplates(templateType = null) {
+    const params = templateType ? { template_type: templateType } : {};
+    const response = await api.get('/workflows', { params });
+    return response.data;
+  },
+
+  async getWorkflowTemplate(templateId) {
+    const response = await api.get(`/workflows/${templateId}`);
+    return response.data;
+  },
+
+  async createWorkflowTemplate(templateData) {
+    const response = await api.post('/workflows', templateData);
+    return response.data;
+  },
+
+  async deployWorkflowToDevices(templateId, deployData) {
+    const response = await api.post(`/workflows/${templateId}/deploy`, deployData);
+    return response.data;
+  },
+
+  async updateWorkflowTemplate(templateId, updates) {
+    const response = await api.put(`/workflows/${templateId}`, updates);
+    return response.data;
+  },
+
+  async deleteWorkflowTemplate(templateId) {
+    const response = await api.delete(`/workflows/${templateId}`);
+    return response.data;
+  },
+
+  async saveEngagementAsWorkflow(name, description, crawlerConfig) {
+    const response = await api.post('/workflows/save-from-engagement', crawlerConfig, {
+      params: { name, description }
+    });
+    return response.data;
+  },
+
+  async getDeviceQueue(udid) {
+    const response = await api.get(`/devices/${udid}/queue`);
+    return response.data;
+  },
+
+  async getAllDeviceQueues() {
+    const response = await api.get('/devices/queues/all');
+    return response.data;
+  },
+
+  async createDeviceBoundTask(taskData) {
+    const response = await api.post('/tasks/create-device-bound', taskData);
+    return response.data;
+  },
+
+  async getSafeModeStatus() {
+    const response = await api.get('/system/safe-mode');
+    return response.data;
+  },
+
   // Generic API call
   async get(endpoint) {
     const response = await api.get(endpoint);
