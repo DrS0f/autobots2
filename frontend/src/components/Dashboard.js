@@ -551,6 +551,9 @@ const Dashboard = () => {
         onCreateWorkflow={handleCreateWorkflow}
         dashboardStats={dashboardStats}
       />
+      
+      {/* Enhanced Action Feedback System */}
+      <FeedbackContainer />
     </div>
   );
 };
