@@ -507,10 +507,17 @@ async def get_system_health():
 
 @api_router.get("/settings")
 async def get_settings():
-    """Get current system settings"""
+    """Get current system settings including feature flags"""
     try:
         db_manager = get_db_manager()
         settings = await db_manager.get_settings()
+        
+        # Add feature flags
+        settings["feature_flags"] = {
+            "ENABLE_POOLED_ASSIGNMENT": device_queue_manager.is_pooled_assignment_enabled() if device_queue_manager else False,
+            "SAFE_MODE": device_queue_manager.safe_mode if device_queue_manager else True
+        }
+        
         return {"success": True, "settings": settings}
     except Exception as e:
         logger.error(f"Error getting settings: {e}")
