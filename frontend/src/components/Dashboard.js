@@ -71,6 +71,15 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardStats();
     const interval = setInterval(fetchDashboardStats, 5000); // Refresh every 5 seconds
+
+    // Check if user has seen welcome modal before
+    const welcomed = localStorage.getItem('hasSeenWelcome');
+    if (!welcomed) {
+      setTimeout(() => setShowWelcomeModal(true), 1000);
+    } else {
+      setHasSeenWelcome(true);
+    }
+
     return () => clearInterval(interval);
   }, []);
 
