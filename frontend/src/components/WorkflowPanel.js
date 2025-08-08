@@ -19,7 +19,7 @@ import toast from 'react-hot-toast';
 import { apiClient } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
 
-const WorkflowPanel = ({ dashboardStats, onRefresh }) => {
+const WorkflowPanel = ({ dashboardStats, onRefresh, onOpenWorkflowWizard }) => {
   const [workflows, setWorkflows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
