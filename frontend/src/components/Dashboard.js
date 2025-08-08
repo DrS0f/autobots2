@@ -58,6 +58,8 @@ const Dashboard = () => {
   const [currentScenario, setCurrentScenario] = useState('healthy');
   const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
   const [showSessionBanner, setShowSessionBanner] = useState(false);
+  const [currentMode, setCurrentMode] = useState('safe');
+  const [showModeToggle, setShowModeToggle] = useState(false);
 
   // Fetch dashboard stats
   const fetchDashboardStats = async () => {
