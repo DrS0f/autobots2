@@ -35,6 +35,9 @@ import DailyWorkflow from './DailyWorkflow';
 import KPIChips from './KPIChips';
 import TaskWizard from './TaskWizard';
 import WorkflowWizard from './WorkflowWizard';
+import StatusStrip from './StatusStrip';
+import { FeedbackContainer, feedbackManager } from './ActionFeedback';
+import SessionRecoveryBanner from './SessionContinuity';
 import { apiClient } from '../services/api';
 
 const Dashboard = () => {
