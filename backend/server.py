@@ -108,6 +108,7 @@ class SystemStats(BaseModel):
     active_tasks: Dict[str, Any]
     recent_results: List[Dict[str, Any]]
     license_status: Optional[Dict[str, Any]] = None
+    safe_mode_status: Optional[Dict[str, Any]] = None  # New: Safe mode information
 
 # Phase 4 Models
 class SystemSettingsUpdate(BaseModel):
