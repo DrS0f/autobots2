@@ -220,6 +220,12 @@ const Dashboard = () => {
               onRefresh={fetchDashboardStats}
             />
           )}
+          {activeTab === 'workflows' && (
+            <WorkflowPanel 
+              dashboardStats={dashboardStats} 
+              onRefresh={fetchDashboardStats}
+            />
+          )}
           {activeTab === 'engagement' && (
             <EngagementCrawler 
               dashboardStats={dashboardStats} 
