@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement Phase 5 – SaaS Licensing & Kill‑Switch: Add minimal License Server (FastAPI) in /licensing with JWT authentication, integrate client-side license verification in backend with 15-min intervals and LOCKED state for invalid licenses, create frontend license management UI with status display and global banner, include tests and documentation for production-ready licensing system."
+user_problem_statement: "Implement Phase 1–3 of Per-Device Task Queues + Workflow Cloning in safe mock mode: Build all schema, APIs, and UI changes needed for per-device queues and workflow cloning, but keep execution in mock/simulation mode so no live tasks run. This includes creating workflow_templates and device_pacing_state collections, extending tasks with required device_id and workflow_id fields, adding mock in-memory queues for each device, implementing new API endpoints (GET /api/devices/{udid}/queue, GET/POST /api/workflows, POST /api/workflows/{id}/deploy), updating UI with Workflows tab, device queue visualization, required device selector for tasks, and ENABLE_POOLED_ASSIGNMENT feature flag support. All in safe mock mode with global 'SAFE MODE ACTIVE' banner."
 
 backend:
   - task: "License Server Implementation"
