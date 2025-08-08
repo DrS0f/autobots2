@@ -30,18 +30,23 @@ const TaskManagementPanel = ({ dashboardStats, onRefresh }) => {
       toast.error('Please enter a valid Instagram username');
       return;
     }
+    if (!formData.device_id) {
+      toast.error('Please select a device');
+      return;
+    }
 
     setCraving(true);
     try {
-      const result = await apiClient.createTask({
+      const result = await apiClient.createDeviceBoundTask({
         ...formData,
         target_username: formData.target_username.replace('@', '') // Remove @ if present
       });
       
-      toast.success(`Task created for @${formData.target_username}`);
+      toast.success(`Task created for @${formData.target_username} on device ${result.device_id}`);
       setShowCreateForm(false);
       setFormData({
         target_username: '',
+        device_id: '',
         actions: ['search_user', 'view_profile', 'like_post', 'follow_user', 'navigate_home'],
         max_likes: 3,
         max_follows: 1,
