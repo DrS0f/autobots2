@@ -909,24 +909,6 @@ async def verify_license_now():
 
 # Per-Device Queue & Workflow Management Endpoints
 
-@api_router.get("/settings")
-async def get_settings():
-    """Get current system settings including feature flags"""
-    try:
-        db_manager = get_db_manager()
-        settings = await db_manager.get_settings()
-        
-        # Add feature flags
-        settings["feature_flags"] = {
-            "ENABLE_POOLED_ASSIGNMENT": device_queue_manager.is_pooled_assignment_enabled() if device_queue_manager else False,
-            "SAFE_MODE": device_queue_manager.safe_mode if device_queue_manager else True
-        }
-        
-        return {"success": True, "settings": settings}
-    except Exception as e:
-        logger.error(f"Error getting settings: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get settings: {str(e)}")
-
 @api_router.get("/workflows")
 async def get_workflow_templates(template_type: Optional[str] = Query(None, description="Filter by template type")):
     """Get all workflow templates"""
