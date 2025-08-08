@@ -63,6 +63,10 @@ engagement_task_manager = EngagementTaskManager(device_manager)
 device_queue_manager = None  # Will be initialized after device_manager
 workflow_manager = None      # Will be initialized after database
 
+# Phase 4: Live Device Integration System
+dual_mode_handler = None     # Will be initialized during startup
+live_device_manager = None   # Will be initialized if live mode is enabled
+
 # Pydantic Models
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
