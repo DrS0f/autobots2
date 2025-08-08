@@ -216,6 +216,22 @@ const Dashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* Help Menu */}
+              <button
+                onClick={() => setShowGuidedTour(true)}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                title="Start guided tour"
+              >
+                <QuestionMarkCircleIcon className="h-4 w-4 mr-2" />
+                Help
+              </button>
+
+              {/* Scenario Simulator */}
+              <ScenarioSimulator 
+                currentScenario={currentScenario}
+                onScenarioChange={handleScenarioChange}
+              />
+
               {/* System Status */}
               <div className="flex items-center space-x-2">
                 <div className={`h-3 w-3 rounded-full ${systemRunning ? 'bg-green-400' : 'bg-red-400'} animate-pulse`}></div>
