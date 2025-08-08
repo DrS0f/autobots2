@@ -1,30 +1,33 @@
 /**
- * Data Source Configuration for Safe Mode / Live Mode Transition
+ * Data Source Configuration for Safe Mode / Live Mode Transition - Phase 4
  * 
- * This file centralizes all data source configurations to enable easy
- * transition from Safe Mode (mock data) to Live Mode (real device APIs)
+ * This file centralizes all data source configurations to enable instant
+ * transition between Safe Mode (mock data) and Live Mode (real device APIs)
  * 
- * PHASE 4 TRANSITION NOTES:
- * - Change SAFE_MODE to false to enable live APIs
- * - Implement real API endpoints in liveDataSources
- * - Test with gradual rollout using feature flags
+ * PHASE 4 FEATURES:
+ * - Dual-mode toggle with instant switching capability
+ * - Live device integration with fallback handling
+ * - User confirmation system for live operations
+ * - Comprehensive error handling and recovery
  */
 
-// Global configuration
+// Global configuration - Can be toggled at runtime
 export const DATA_SOURCE_CONFIG = {
-  // Set to false in Phase 4 to enable live device integration
-  SAFE_MODE: true,
+  // Primary mode control - Can be changed via UI toggle
+  SAFE_MODE: localStorage.getItem('instagram_automation_safe_mode') !== 'false',
   
-  // Feature flags for gradual rollout
+  // Feature flags for gradual rollout and testing
   FEATURES: {
-    LIVE_DEVICE_STATUS: false,
-    LIVE_QUEUE_MANAGEMENT: false,
-    LIVE_TASK_EXECUTION: false,
-    LIVE_WORKFLOW_DEPLOYMENT: false,
-    REAL_TIME_UPDATES: false
+    LIVE_DEVICE_STATUS: localStorage.getItem('feature_live_device_status') === 'true',
+    LIVE_QUEUE_MANAGEMENT: localStorage.getItem('feature_live_queue_management') === 'true',
+    LIVE_TASK_EXECUTION: localStorage.getItem('feature_live_task_execution') === 'true',
+    LIVE_WORKFLOW_DEPLOYMENT: localStorage.getItem('feature_live_workflow_deployment') === 'true',
+    REAL_TIME_UPDATES: localStorage.getItem('feature_realtime_updates') === 'true',
+    AUTO_FALLBACK: localStorage.getItem('feature_auto_fallback') !== 'false',
+    USER_CONFIRMATION: localStorage.getItem('feature_user_confirmation') !== 'false'
   },
 
-  // Mock data refresh intervals (milliseconds)
+  // Update intervals by mode
   MOCK_INTERVALS: {
     DASHBOARD_STATS: 5000,
     DEVICE_STATUS: 10000,
@@ -32,30 +35,60 @@ export const DATA_SOURCE_CONFIG = {
     TASK_PROGRESS: 2000
   },
 
-  // Live data intervals for Phase 4
   LIVE_INTERVALS: {
     DASHBOARD_STATS: 3000,
     DEVICE_STATUS: 5000,
     QUEUE_UPDATES: 2000,
     TASK_PROGRESS: 1000
+  },
+
+  // Live mode configuration
+  LIVE_CONFIG: {
+    MAX_RETRY_ATTEMPTS: 3,
+    FALLBACK_TIMEOUT_MS: 5000,
+    CONFIRMATION_TIMEOUT_MS: 30000,
+    DEVICE_HEALTH_CHECK_INTERVAL: 60000
   }
 };
 
-// Mock data generators for Safe Mode
+// Mode toggle function
+export const toggleSafeMode = (enabled) => {
+  DATA_SOURCE_CONFIG.SAFE_MODE = enabled;
+  localStorage.setItem('instagram_automation_safe_mode', enabled ? 'true' : 'false');
+  
+  // Emit event for components to react
+  window.dispatchEvent(new CustomEvent('safeModeChanged', { 
+    detail: { safeMode: enabled } 
+  }));
+  
+  console.log(`${enabled ? 'Safe' : 'Live'} Mode activated`);
+};
+
+// Feature flag toggle
+export const toggleFeature = (featureName, enabled) => {
+  DATA_SOURCE_CONFIG.FEATURES[featureName] = enabled;
+  localStorage.setItem(`feature_${featureName.toLowerCase()}`, enabled ? 'true' : 'false');
+};
+
+// Enhanced mock data generators for Safe Mode
 export const mockDataSources = {
-  // Dashboard statistics
+  // Dashboard statistics with mode-aware data
   getDashboardStats: () => ({
+    operation_mode: 'safe_mode',
+    live_mode_enabled: false,
+    safe_mode: true,
     system_stats: {
-      uptime: Math.floor(Math.random() * 86400) + 86400, // 1-2 days
+      uptime: Math.floor(Math.random() * 86400) + 86400,
       active_workers: Math.floor(Math.random() * 5) + 2,
-      memory_usage: Math.random() * 0.3 + 0.4, // 40-70%
-      cpu_usage: Math.random() * 0.4 + 0.2 // 20-60%
+      memory_usage: Math.random() * 0.3 + 0.4,
+      cpu_usage: Math.random() * 0.4 + 0.2
     },
     device_status: {
       total_devices: 3,
       ready_devices: Math.floor(Math.random() * 3) + 1,
       busy_devices: Math.floor(Math.random() * 2),
       error_devices: Math.random() > 0.8 ? 1 : 0,
+      fallback_devices: 0,
       devices: generateMockDevices()
     },
     queue_status: {
@@ -70,18 +103,20 @@ export const mockDataSources = {
     }
   }),
 
-  // Device management
+  // Device management with Safe Mode indicators
   getDeviceStatus: (deviceId) => ({
     device_id: deviceId,
     name: `Mock Device ${deviceId.slice(-3)}`,
-    status: ['ready', 'busy', 'error'][Math.floor(Math.random() * 3)],
+    status: ['ready', 'busy'][Math.floor(Math.random() * 2)],
     ios_version: `${Math.floor(Math.random() * 3) + 15}.${Math.floor(Math.random() * 10)}`,
     connection_port: 9100 + Math.floor(Math.random() * 100),
     last_seen: new Date().toISOString(),
-    session_id: `session_${Math.random().toString(36).substr(2, 9)}`
+    session_id: `session_${Math.random().toString(36).substr(2, 9)}`,
+    safe_mode: true,
+    fallback_mode: false
   }),
 
-  // Queue management
+  // Queue management with enhanced insights
   getDeviceQueue: (deviceId) => ({
     device_id: deviceId,
     device_name: `Mock Device ${deviceId.slice(-3)}`,
@@ -92,12 +127,12 @@ export const mockDataSources = {
       estimated_completion: new Date(Date.now() + Math.random() * 120000).toISOString()
     } : null,
     next_run_eta: new Date(Date.now() + Math.random() * 600000).toISOString(),
-    pacing_stats: generateMockPacingStats()
+    pacing_stats: generateMockPacingStats(),
+    safe_mode: true
   }),
 
-  // Task execution
+  // Task execution with confirmation simulation
   executeTask: async (taskData) => {
-    // Simulate task execution delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     return {
@@ -110,11 +145,13 @@ export const mockDataSources = {
         follows_made: Math.random() > 0.5 ? 1 : 0,
         profile_views: 1,
         success_rate: 1.0
-      }
+      },
+      safe_mode: true,
+      requires_confirmation: false
     };
   },
 
-  // Workflow deployment
+  // Workflow deployment with enhanced tracking
   deployWorkflow: async (templateId, deviceIds) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -132,9 +169,19 @@ export const mockDataSources = {
         successful_deployments: deviceIds.length,
         failed_deployments: 0,
         deployment_time: new Date().toISOString()
-      }
+      },
+      safe_mode: true,
+      requires_confirmation: false
     };
-  }
+  },
+
+  // Mode and feature management
+  getModeStatus: () => ({
+    current_mode: 'safe_mode',
+    live_mode_enabled: false,
+    features: DATA_SOURCE_CONFIG.FEATURES,
+    fallback_devices: []
+  })
 };
 
 // Live data sources for Phase 4 (to be implemented)
