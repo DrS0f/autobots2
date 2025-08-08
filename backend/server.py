@@ -439,6 +439,15 @@ async def get_dashboard_stats():
             logger.warning(f"Failed to get license status for dashboard: {e}")
             stats["license_status"] = None
         
+        # Add safe mode status
+        try:
+            if device_queue_manager:
+                safe_mode_status = device_queue_manager.get_safe_mode_status()
+                stats["safe_mode_status"] = safe_mode_status
+        except Exception as e:
+            logger.warning(f"Failed to get safe mode status for dashboard: {e}")
+            stats["safe_mode_status"] = None
+        
         return SystemStats(**stats)
     except Exception as e:
         logger.error(f"Failed to get dashboard stats: {e}")
