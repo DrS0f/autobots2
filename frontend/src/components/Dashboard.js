@@ -22,6 +22,7 @@ import EngagementCrawler from './EngagementCrawler';
 import SettingsPanel from './SettingsPanel';
 import InteractionsLog from './InteractionsLog';
 import LicensePanel from './LicensePanel';
+import WorkflowPanel from './WorkflowPanel';
 import { apiClient } from '../services/api';
 
 const Dashboard = () => {
