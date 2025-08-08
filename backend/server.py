@@ -27,6 +27,11 @@ from ios_automation.deduplication_service import get_deduplication_service
 from ios_automation.error_handling import get_error_handler
 from ios_automation.account_execution_manager import get_execution_manager
 
+# Import Per-Device Queue modules (Phase 1-3)
+from ios_automation.workflow_models import get_workflow_db_manager, init_workflow_database
+from ios_automation.device_queue_manager import get_device_queue_manager, init_device_queue_system
+from ios_automation.workflow_manager import get_workflow_manager, init_workflow_manager
+
 # Load environment first
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
