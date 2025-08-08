@@ -1156,6 +1156,8 @@ async def get_safe_mode_status():
 @app.on_event("startup")
 async def startup_event():
     """Initialize system on startup"""
+    global device_queue_manager, workflow_manager
+    
     logger.info("Starting iOS Instagram Automation API")
     
     try:
@@ -1166,6 +1168,20 @@ async def startup_event():
         # Initialize Phase 4 database
         await init_database()
         logger.info("Phase 4 database initialized")
+        
+        # Initialize Phase 1-3 workflow database
+        await init_workflow_database()
+        logger.info("Workflow database initialized")
+        
+        # Initialize device queue system
+        device_queue_manager = get_device_queue_manager(device_manager)
+        await init_device_queue_system(device_manager)
+        logger.info("Device queue system initialized")
+        
+        # Initialize workflow manager
+        workflow_manager = get_workflow_manager()
+        await init_workflow_manager()
+        logger.info("Workflow manager initialized")
         
         # Discover devices on startup
         devices = await device_manager.discover_devices()
