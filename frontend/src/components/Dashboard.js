@@ -266,34 +266,44 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Quick Stats Bar */}
+      {/* Enhanced Quick Actions & KPI Dashboard */}
       {dashboardStats && (
         <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-indigo-600">
-                  {dashboardStats.device_status.ready_devices}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Quick Actions */}
+              <div className="lg:col-span-1">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Quick Actions</h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setShowDailyWorkflow(true)}
+                      className="w-full flex items-center px-3 py-2 text-sm text-left text-gray-700 bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm"
+                    >
+                      <StarIcon className="h-4 w-4 mr-2 text-yellow-500" />
+                      Start My Day
+                    </button>
+                    <button
+                      onClick={() => setShowTaskWizard(true)}
+                      className="w-full flex items-center px-3 py-2 text-sm text-left text-gray-700 bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm"
+                    >
+                      <PlayIcon className="h-4 w-4 mr-2 text-green-500" />
+                      Create Task
+                    </button>
+                    <button
+                      onClick={() => setShowWorkflowWizard(true)}
+                      className="w-full flex items-center px-3 py-2 text-sm text-left text-gray-700 bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm"
+                    >
+                      <RocketLaunchIcon className="h-4 w-4 mr-2 text-purple-500" />
+                      Create Workflow
+                    </button>
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500">Ready Devices</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {dashboardStats.queue_status.total_tasks}
-                </div>
-                <div className="text-xs text-gray-500">Queued Tasks</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {dashboardStats.active_tasks.count}
-                </div>
-                <div className="text-xs text-gray-500">Active Tasks</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">
-                  {dashboardStats.system_stats.active_workers}
-                </div>
-                <div className="text-xs text-gray-500">Active Workers</div>
+
+              {/* KPI Dashboard */}
+              <div className="lg:col-span-2">
+                <KPIChips dashboardStats={dashboardStats} />
               </div>
             </div>
           </div>
