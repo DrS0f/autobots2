@@ -405,6 +405,47 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Welcome Modal */}
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={handleWelcomeClose}
+        onStartTour={handleStartTour}
+        onUseDemoData={handleUseDemoData}
+        onExploreManually={handleExploreManually}
+      />
+
+      {/* Guided Tour */}
+      <GuidedTour
+        isActive={showGuidedTour}
+        onClose={handleTourClose}
+        onStepChange={handleTourStepChange}
+        currentTab={activeTab}
+      />
+
+      {/* Daily Workflow Modal */}
+      {showDailyWorkflow && (
+        <DailyWorkflow
+          onClose={() => setShowDailyWorkflow(false)}
+          dashboardStats={dashboardStats}
+        />
+      )}
+
+      {/* Task Wizard */}
+      <TaskWizard
+        isOpen={showTaskWizard}
+        onClose={() => setShowTaskWizard(false)}
+        onCreateTask={handleCreateTask}
+        dashboardStats={dashboardStats}
+      />
+
+      {/* Workflow Wizard */}
+      <WorkflowWizard
+        isOpen={showWorkflowWizard}
+        onClose={() => setShowWorkflowWizard(false)}
+        onCreateWorkflow={handleCreateWorkflow}
+        dashboardStats={dashboardStats}
+      />
     </div>
   );
 };
