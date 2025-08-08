@@ -1167,6 +1167,319 @@ async def get_safe_mode_status():
         logger.error(f"Error getting safe mode status: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get safe mode status: {str(e)}")
 
+# ===============================================
+# PHASE 4: LIVE DEVICE INTEGRATION API ENDPOINTS
+# ===============================================
+
+@api_router.get("/dashboard/live-stats")
+async def get_live_dashboard_stats():
+    """Get dashboard statistics in live mode"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+            
+        stats = await dual_mode_handler.get_dashboard_stats()
+        return {
+            "success": True,
+            **stats
+        }
+    except Exception as e:
+        logger.error(f"Error getting live dashboard stats: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get live dashboard stats: {str(e)}")
+
+@api_router.get("/devices/status-live")
+async def get_all_live_device_status():
+    """Get status of all devices in live mode"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+            
+        devices = await dual_mode_handler.get_device_status()
+        return {
+            "success": True,
+            "devices": devices
+        }
+    except Exception as e:
+        logger.error(f"Error getting live device status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get live device status: {str(e)}")
+
+@api_router.get("/devices/{device_id}/status-live")
+async def get_live_device_status(device_id: str):
+    """Get status of specific device in live mode"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+            
+        device = await dual_mode_handler.get_device_status(device_id)
+        if device:
+            return {
+                "success": True,
+                "device": device
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Device not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting live device status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get live device status: {str(e)}")
+
+@api_router.get("/devices/{device_id}/queue/live")
+async def get_live_device_queue(device_id: str):
+    """Get device queue in live mode"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+            
+        # This would integrate with live queue management
+        # For now, return enhanced queue data
+        queue_data = await device_queue_manager.get_device_queue_snapshot(device_id)
+        
+        return {
+            "success": True,
+            "queue_snapshot": {
+                **queue_data,
+                "live_mode": not dual_mode_handler.config.mode.value == "safe_mode",
+                "fallback_active": dual_mode_handler.fallback_tracker.is_device_in_fallback(device_id)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error getting live device queue: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get live device queue: {str(e)}")
+
+@api_router.post("/tasks/execute-live")
+async def execute_live_task(task_data: Dict[str, Any] = Body(...)):
+    """Execute task on live device"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+        
+        # Check license first
+        if not license_client.is_licensed():
+            raise HTTPException(status_code=403, detail="License required: System is locked due to invalid or expired license")
+        
+        device_id = task_data.get('device_id')
+        if not device_id:
+            raise HTTPException(status_code=400, detail="device_id is required")
+        
+        confirmation_required = task_data.get('confirmation_required', dual_mode_handler.config.user_confirmation_required)
+        
+        result = await dual_mode_handler.execute_task(
+            device_udid=device_id,
+            task_data=task_data,
+            user_confirmation=not confirmation_required
+        )
+        
+        return {
+            "success": True,
+            **result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error executing live task: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to execute live task: {str(e)}")
+
+@api_router.post("/workflows/{template_id}/deploy-live")
+async def deploy_live_workflow(template_id: str, deploy_data: Dict[str, Any] = Body(...)):
+    """Deploy workflow to live devices"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+        
+        # Check license first
+        if not license_client.is_licensed():
+            raise HTTPException(status_code=403, detail="License required: System is locked due to invalid or expired license")
+        
+        device_ids = deploy_data.get('device_ids', [])
+        if not device_ids:
+            raise HTTPException(status_code=400, detail="device_ids list is required")
+        
+        confirmation_required = deploy_data.get('confirmation_required', dual_mode_handler.config.user_confirmation_required)
+        
+        result = await dual_mode_handler.deploy_workflow(
+            template_id=template_id,
+            device_ids=device_ids,
+            user_confirmation=not confirmation_required
+        )
+        
+        return {
+            "success": True,
+            **result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deploying live workflow: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to deploy live workflow: {str(e)}")
+
+@api_router.get("/system/mode-status")
+async def get_system_mode_status():
+    """Get current system mode status"""
+    try:
+        if not dual_mode_handler:
+            return {
+                "success": True,
+                "current_mode": "safe_mode",
+                "live_mode_enabled": False,
+                "features": {},
+                "fallback_devices": []
+            }
+        
+        fallback_devices = await dual_mode_handler.get_fallback_devices()
+        
+        return {
+            "success": True,
+            "current_mode": dual_mode_handler.get_current_mode().value,
+            "live_mode_enabled": dual_mode_handler.config.is_live_mode_active(),
+            "features": dual_mode_handler.config.features,
+            "fallback_devices": fallback_devices
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting mode status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get mode status: {str(e)}")
+
+@api_router.post("/system/mode/set")
+async def set_system_mode(mode_data: Dict[str, str] = Body(...)):
+    """Set system operation mode"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+        
+        mode_str = mode_data.get('mode')
+        if not mode_str:
+            raise HTTPException(status_code=400, detail="mode is required")
+        
+        # Validate mode
+        try:
+            from ios_automation.dual_mode_handler import OperationMode
+            mode = OperationMode(mode_str)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid mode: {mode_str}")
+        
+        success = await dual_mode_handler.set_mode(mode)
+        if success:
+            return {
+                "success": True,
+                "current_mode": mode.value,
+                "message": f"System mode changed to {mode.value}"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to change system mode")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error setting system mode: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to set system mode: {str(e)}")
+
+@api_router.post("/devices/discover")
+async def discover_live_devices():
+    """Discover connected iOS devices"""
+    try:
+        if not live_device_manager:
+            raise HTTPException(status_code=503, detail="Live device manager not available")
+            
+        devices = await live_device_manager.discover_devices()
+        
+        return {
+            "success": True,
+            "discovered_devices": [device.to_dict() for device in devices],
+            "device_count": len(devices)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error discovering devices: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to discover devices: {str(e)}")
+
+@api_router.post("/devices/{device_id}/initialize")
+async def initialize_live_device(device_id: str):
+    """Initialize device for automation"""
+    try:
+        if not live_device_manager:
+            raise HTTPException(status_code=503, detail="Live device manager not available")
+            
+        success = await live_device_manager.initialize_device(device_id)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Device {device_id} initialized successfully"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to initialize device")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error initializing device: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to initialize device: {str(e)}")
+
+@api_router.get("/devices/fallback")
+async def get_fallback_devices():
+    """Get devices in fallback mode"""
+    try:
+        if not dual_mode_handler:
+            return {
+                "success": True,
+                "fallback_devices": []
+            }
+            
+        fallback_devices = await dual_mode_handler.get_fallback_devices()
+        
+        return {
+            "success": True,
+            "fallback_devices": fallback_devices
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting fallback devices: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get fallback devices: {str(e)}")
+
+@api_router.post("/devices/{device_id}/clear-fallback")
+async def clear_device_fallback(device_id: str):
+    """Clear fallback mode for device"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+            
+        success = await dual_mode_handler.clear_device_fallback(device_id)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Fallback cleared for device {device_id}"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to clear device fallback")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error clearing device fallback: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to clear device fallback: {str(e)}")
+
+@api_router.post("/operations/confirm/{confirmation_id}")
+async def confirm_live_operation(confirmation_id: str):
+    """Confirm a pending live operation"""
+    try:
+        if not dual_mode_handler:
+            raise HTTPException(status_code=503, detail="Dual mode handler not initialized")
+            
+        result = await dual_mode_handler.confirm_operation(confirmation_id)
+        
+        return {
+            "success": True,
+            **result
+        }
+        
+    except Exception as e:
+        logger.error(f"Error confirming operation: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to confirm operation: {str(e)}")
+
 # Background task to auto-start system
 @app.on_event("startup")
 async def startup_event():
