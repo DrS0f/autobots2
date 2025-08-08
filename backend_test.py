@@ -30,7 +30,7 @@ except ImportError as e:
     LicenseService = None
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://9b89d9f1-548e-4699-8ffa-55b25cb47e22.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://8f4ca915-6fb8-4b57-96c6-9759ceb90a20.preview.emergentagent.com')
 API_BASE_URL = f"{BACKEND_URL}/api"
 LICENSE_SERVER_URL = "http://localhost:8002"
 

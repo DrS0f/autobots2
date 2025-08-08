@@ -3,8 +3,8 @@
 
 **Test Date:** August 7, 2025  
 **Test Environment:** Production Kubernetes Cluster  
-**Frontend URL:** https://9b89d9f1-548e-4699-8ffa-55b25cb47e22.preview.emergentagent.com  
-**Backend API:** https://9b89d9f1-548e-4699-8ffa-55b25cb47e22.preview.emergentagent.com/api  
+**Frontend URL:** https://8f4ca915-6fb8-4b57-96c6-9759ceb90a20.preview.emergentagent.com  
+**Backend API:** https://8f4ca915-6fb8-4b57-96c6-9759ceb90a20.preview.emergentagent.com/api  
 
 ---
 
