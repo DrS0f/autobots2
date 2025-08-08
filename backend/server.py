@@ -27,6 +27,10 @@ from ios_automation.deduplication_service import get_deduplication_service
 from ios_automation.error_handling import get_error_handler
 from ios_automation.account_execution_manager import get_execution_manager
 
+# Import Phase 4 Live Device Integration modules
+from ios_automation.dual_mode_handler import get_dual_mode_handler, init_dual_mode_handler, OperationMode
+from ios_automation.live_device_manager import get_live_device_manager, init_live_device_manager
+
 # Import Per-Device Queue modules (Phase 1-3)
 from ios_automation.workflow_models import get_workflow_db_manager, init_workflow_database
 from ios_automation.device_queue_manager import get_device_queue_manager, init_device_queue_system
