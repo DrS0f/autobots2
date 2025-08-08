@@ -11,7 +11,11 @@ import {
   CogIcon,
   DocumentTextIcon,
   KeyIcon,
-  RocketLaunchIcon
+  RocketLaunchIcon,
+  Bars3Icon,
+  QuestionMarkCircleIcon,
+  StarIcon,
+  BeakerIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -24,6 +28,13 @@ import SettingsPanel from './SettingsPanel';
 import InteractionsLog from './InteractionsLog';
 import LicensePanel from './LicensePanel';
 import WorkflowPanel from './WorkflowPanel';
+import WelcomeModal from './WelcomeModal';
+import GuidedTour from './GuidedTour';
+import ScenarioSimulator from './ScenarioSimulator';
+import DailyWorkflow from './DailyWorkflow';
+import KPIChips from './KPIChips';
+import TaskWizard from './TaskWizard';
+import WorkflowWizard from './WorkflowWizard';
 import { apiClient } from '../services/api';
 
 const Dashboard = () => {
