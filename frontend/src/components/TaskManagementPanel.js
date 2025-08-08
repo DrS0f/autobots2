@@ -16,6 +16,7 @@ const TaskManagementPanel = ({ dashboardStats, onRefresh }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     target_username: '',
+    device_id: '', // New: Required device selection
     actions: ['search_user', 'view_profile', 'like_post', 'follow_user', 'navigate_home'],
     max_likes: 3,
     max_follows: 1,
