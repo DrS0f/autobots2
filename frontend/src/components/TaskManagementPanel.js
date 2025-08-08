@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import { apiClient } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
 
-const TaskManagementPanel = ({ dashboardStats, onRefresh }) => {
+const TaskManagementPanel = ({ dashboardStats, onRefresh, onOpenTaskWizard }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     target_username: '',
