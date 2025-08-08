@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import LicenseBanner from './components/LicenseBanner';
+import SafeModeBanner from './components/SafeModeBanner';
 
 function App() {
   return (
