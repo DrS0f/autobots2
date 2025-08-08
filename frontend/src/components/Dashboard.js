@@ -295,6 +295,17 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Status Strip - Fixed at top */}
+      <StatusStrip dashboardStats={dashboardStats} />
+      
+      {/* Session Recovery Banner - Below status strip */}
+      {showSessionBanner && (
+        <SessionRecoveryBanner
+          onRestore={handleSessionRestore}
+          onDismiss={() => setShowSessionBanner(false)}
+        />
+      )}
+      
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
