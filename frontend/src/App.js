@@ -37,7 +37,7 @@ function App() {
         <SafeModeBanner />
         <LicenseBanner />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<OperatorDashboard />} />
         </Routes>
       </Router>
     </div>
