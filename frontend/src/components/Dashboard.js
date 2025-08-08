@@ -38,6 +38,8 @@ import WorkflowWizard from './WorkflowWizard';
 import StatusStrip from './StatusStrip';
 import { FeedbackContainer, feedbackManager } from './ActionFeedback';
 import SessionRecoveryBanner from './SessionContinuity';
+import ModeToggle from './ModeToggle';
+import FallbackBanner from './FallbackBanner';
 import { apiClient } from '../services/api';
 
 const Dashboard = () => {
