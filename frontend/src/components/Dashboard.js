@@ -71,6 +71,7 @@ const Dashboard = () => {
 
   const tabs = [
     { id: 'tasks', name: 'Task Management', icon: QueueListIcon },
+    { id: 'workflows', name: 'Workflows', icon: RocketLaunchIcon },
     { id: 'engagement', name: 'Engagement Crawler', icon: ChatBubbleLeftRightIcon },
     { id: 'devices', name: 'Devices', icon: DevicePhoneMobileIcon },
     { id: 'monitoring', name: 'System Monitor', icon: ChartBarIcon },
