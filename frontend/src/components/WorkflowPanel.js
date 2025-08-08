@@ -217,7 +217,7 @@ const WorkflowPanel = ({ dashboardStats, onRefresh, onOpenWorkflowWizard }) => {
           <p className="text-sm text-gray-500">Create and deploy automation workflows to multiple devices</p>
         </div>
         <button
-          onClick={() => setShowCreateForm(true)}
+          onClick={() => onOpenWorkflowWizard?.()}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200"
         >
           <PlusIcon className="h-4 w-4 mr-2" />
