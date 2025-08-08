@@ -302,6 +302,7 @@ const Dashboard = () => {
     { id: 'history', name: 'Task History', icon: ClockIcon },
     { id: 'interactions', name: 'Interaction Logs', icon: DocumentTextIcon },
     { id: 'settings', name: 'Settings', icon: CogIcon },
+    { id: 'mode-toggle', name: 'Mode Settings', icon: BoltIcon },
     { id: 'license', name: 'License', icon: KeyIcon },
   ];
 
