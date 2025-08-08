@@ -135,6 +135,43 @@ class ExportRequest(BaseModel):
     from_date: Optional[datetime] = None
     to_date: Optional[datetime] = None
 
+# Per-Device Queue Models
+class WorkflowTemplateCreate(BaseModel):
+    name: str = Field(..., description="Workflow template name")
+    description: str = Field("", description="Optional description")
+    template_type: str = Field("engagement", description="Template type: engagement, single_user, custom")
+    
+    # Engagement workflow fields
+    target_pages: List[str] = Field(default=[], description="Target Instagram pages for engagement")
+    comment_list: List[str] = Field(default=[], description="List of comments to use")
+    actions: Dict[str, bool] = Field(default={"follow": True, "like": True, "comment": False}, description="Actions to enable")
+    max_users_per_page: int = Field(default=20, ge=1, le=50, description="Max users to process per page")
+    profile_validation: Dict[str, Any] = Field(default={"public_only": True, "min_posts": 2}, description="Profile validation criteria")
+    skip_rate: float = Field(default=0.15, ge=0.0, le=0.5, description="Skip rate for realism")
+    
+    # Single user workflow fields  
+    target_username: str = Field("", description="Target username for single-user workflows")
+    max_likes: int = Field(default=3, ge=1, le=10, description="Max posts to like")
+    max_follows: int = Field(default=1, ge=0, le=1, description="Whether to follow user")
+    
+    # Common fields
+    priority: str = Field(default="normal", description="Task priority")
+    delays: Dict[str, Any] = Field(default={}, description="Human behavior delays")
+    limits: Dict[str, Any] = Field(default={}, description="Rate limits")
+    rest_windows: List[Dict[str, Any]] = Field(default=[], description="Rest/cooldown windows")
+
+class WorkflowDeployRequest(BaseModel):
+    device_ids: List[str] = Field(..., description="List of device UDIDs to deploy to")
+    overrides: Optional[Dict[str, Any]] = Field(None, description="Optional configuration overrides")
+
+class DeviceTaskCreate(BaseModel):
+    device_id: str = Field(..., description="Required device UDID for task assignment")
+    target_username: str = Field(..., description="Instagram username to target")
+    actions: List[str] = Field(default=["search_user", "view_profile", "like_post", "follow_user", "navigate_home"], description="Actions to perform")
+    max_likes: int = Field(default=3, ge=1, le=10, description="Max posts to like")
+    max_follows: int = Field(default=1, ge=0, le=1, description="Whether to follow user")
+    priority: str = Field(default="normal", description="Task priority")
+
 # Basic API endpoints
 @api_router.get("/")
 async def root():
