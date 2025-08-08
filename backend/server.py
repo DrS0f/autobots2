@@ -891,6 +891,258 @@ async def verify_license_now():
         logger.error(f"Error during license verification: {e}")
         raise HTTPException(status_code=500, detail=f"License verification failed: {str(e)}")
 
+# Per-Device Queue & Workflow Management Endpoints
+
+@api_router.get("/settings")
+async def get_settings():
+    """Get current system settings including feature flags"""
+    try:
+        db_manager = get_db_manager()
+        settings = await db_manager.get_settings()
+        
+        # Add feature flags
+        settings["feature_flags"] = {
+            "ENABLE_POOLED_ASSIGNMENT": device_queue_manager.is_pooled_assignment_enabled() if device_queue_manager else False,
+            "SAFE_MODE": device_queue_manager.safe_mode if device_queue_manager else True
+        }
+        
+        return {"success": True, "settings": settings}
+    except Exception as e:
+        logger.error(f"Error getting settings: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get settings: {str(e)}")
+
+@api_router.get("/workflows")
+async def get_workflow_templates(template_type: Optional[str] = Query(None, description="Filter by template type")):
+    """Get all workflow templates"""
+    try:
+        templates = await workflow_manager.list_workflow_templates(template_type)
+        return {
+            "success": True,
+            "templates": templates,
+            "total_count": len(templates)
+        }
+    except Exception as e:
+        logger.error(f"Error getting workflow templates: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get workflow templates: {str(e)}")
+
+@api_router.get("/workflows/{template_id}")
+async def get_workflow_template(template_id: str):
+    """Get specific workflow template"""
+    try:
+        template = await workflow_manager.get_workflow_template(template_id)
+        if not template:
+            raise HTTPException(status_code=404, detail="Workflow template not found")
+        
+        # Convert to dict for response
+        template_dict = {
+            "template_id": template.template_id,
+            "name": template.name,
+            "description": template.description,
+            "template_type": template.template_type,
+            "target_pages": template.target_pages,
+            "target_username": template.target_username,
+            "comment_list": template.comment_list,
+            "actions": template.actions,
+            "max_users_per_page": template.max_users_per_page,
+            "max_likes": template.max_likes,
+            "max_follows": template.max_follows,
+            "profile_validation": template.profile_validation,
+            "skip_rate": template.skip_rate,
+            "priority": template.priority,
+            "delays": template.delays,
+            "limits": template.limits,
+            "rest_windows": template.rest_windows,
+            "created_at": template.created_at.isoformat(),
+            "updated_at": template.updated_at.isoformat(),
+            "created_by": template.created_by,
+            "is_active": template.is_active
+        }
+        
+        return {
+            "success": True,
+            "template": template_dict
+        }
+    except Exception as e:
+        logger.error(f"Error getting workflow template: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get workflow template: {str(e)}")
+
+@api_router.post("/workflows")
+async def create_workflow_template(template_data: WorkflowTemplateCreate):
+    """Create new workflow template"""
+    try:
+        template_config = template_data.dict()
+        name = template_config.pop("name")
+        description = template_config.pop("description", "")
+        template_type = template_config.pop("template_type", "engagement")
+        
+        template_id = await workflow_manager.create_workflow_template(
+            name=name,
+            description=description,
+            template_type=template_type,
+            **template_config
+        )
+        
+        if template_id:
+            return {
+                "success": True,
+                "template_id": template_id,
+                "message": f"Workflow template '{name}' created successfully"
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create workflow template")
+            
+    except Exception as e:
+        logger.error(f"Error creating workflow template: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create workflow template: {str(e)}")
+
+@api_router.post("/workflows/{template_id}/deploy")
+async def deploy_workflow_to_devices(template_id: str, deploy_data: WorkflowDeployRequest):
+    """Deploy workflow template to multiple devices"""
+    try:
+        result = await workflow_manager.deploy_workflow_to_devices(
+            template_id=template_id,
+            device_ids=deploy_data.device_ids,
+            overrides=deploy_data.overrides
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error deploying workflow to devices: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to deploy workflow: {str(e)}")
+
+@api_router.put("/workflows/{template_id}")
+async def update_workflow_template(template_id: str, updates: Dict[str, Any]):
+    """Update existing workflow template"""
+    try:
+        success = await workflow_manager.update_workflow_template(template_id, updates)
+        if success:
+            return {"success": True, "message": "Workflow template updated successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Workflow template not found")
+            
+    except Exception as e:
+        logger.error(f"Error updating workflow template: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update workflow template: {str(e)}")
+
+@api_router.delete("/workflows/{template_id}")
+async def delete_workflow_template(template_id: str):
+    """Delete workflow template"""
+    try:
+        success = await workflow_manager.delete_workflow_template(template_id)
+        if success:
+            return {"success": True, "message": "Workflow template deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Workflow template not found")
+            
+    except Exception as e:
+        logger.error(f"Error deleting workflow template: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete workflow template: {str(e)}")
+
+@api_router.post("/workflows/save-from-engagement")
+async def save_engagement_as_workflow(
+    name: str = Query(..., description="Workflow name"),
+    description: str = Query("", description="Optional description"),
+    crawler_config: Dict[str, Any] = Body(..., description="Engagement crawler configuration")
+):
+    """Save engagement crawler configuration as workflow template"""
+    try:
+        template_id = await workflow_manager.save_engagement_crawler_as_workflow(
+            crawler_config=crawler_config,
+            name=name,
+            description=description
+        )
+        
+        if template_id:
+            return {
+                "success": True,
+                "template_id": template_id,
+                "message": f"Engagement configuration saved as workflow '{name}'"
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to save engagement as workflow")
+            
+    except Exception as e:
+        logger.error(f"Error saving engagement as workflow: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to save engagement as workflow: {str(e)}")
+
+@api_router.get("/devices/{udid}/queue")
+async def get_device_queue(udid: str):
+    """Get device-specific queue snapshot with pacing stats"""
+    try:
+        queue_snapshot = await device_queue_manager.get_device_queue_snapshot(udid)
+        return {
+            "success": True,
+            "queue_snapshot": queue_snapshot
+        }
+    except Exception as e:
+        logger.error(f"Error getting device queue: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get device queue: {str(e)}")
+
+@api_router.get("/devices/queues/all")
+async def get_all_device_queues():
+    """Get queue snapshots for all devices"""
+    try:
+        all_queues = await device_queue_manager.get_all_device_queues()
+        return {
+            "success": True,
+            "device_queues": all_queues,
+            "statistics": device_queue_manager.get_queue_statistics()
+        }
+    except Exception as e:
+        logger.error(f"Error getting all device queues: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get device queues: {str(e)}")
+
+@api_router.post("/tasks/create-device-bound")
+async def create_device_bound_task(task_data: DeviceTaskCreate):
+    """Create device-bound task (new per-device system)"""
+    try:
+        # Check license first
+        if not license_client.is_licensed():
+            raise HTTPException(status_code=403, detail="License required: System is locked due to invalid or expired license")
+        
+        from ios_automation.workflow_models import DeviceTask
+        
+        # Create device task
+        task = DeviceTask(
+            device_id=task_data.device_id,
+            target_username=task_data.target_username,
+            actions=task_data.actions,
+            max_likes=task_data.max_likes,
+            max_follows=task_data.max_follows,
+            priority=task_data.priority
+        )
+        
+        # Enqueue to device
+        success = await device_queue_manager.enqueue_task_to_device(task)
+        if success:
+            return {
+                "success": True,
+                "task_id": task.task_id,
+                "device_id": task.device_id,
+                "queue_position": task.queue_position,
+                "message": f"Task created for @{task.target_username} on device {task.device_id}"
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to enqueue task to device")
+            
+    except Exception as e:
+        logger.error(f"Error creating device-bound task: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create device-bound task: {str(e)}")
+
+@api_router.get("/system/safe-mode")
+async def get_safe_mode_status():
+    """Get safe mode status and information"""
+    try:
+        safe_mode_status = device_queue_manager.get_safe_mode_status()
+        return {
+            "success": True,
+            "safe_mode_status": safe_mode_status
+        }
+    except Exception as e:
+        logger.error(f"Error getting safe mode status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get safe mode status: {str(e)}")
+
 # Background task to auto-start system
 @app.on_event("startup")
 async def startup_event():
