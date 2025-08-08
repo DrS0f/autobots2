@@ -234,7 +234,7 @@ const WorkflowPanel = ({ dashboardStats, onRefresh, onOpenWorkflowWizard }) => {
             Create workflow templates to deploy automation tasks to multiple devices simultaneously.
           </p>
           <button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => onOpenWorkflowWizard?.()}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
