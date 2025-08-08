@@ -227,64 +227,109 @@ const DeviceManagementPanel = ({ dashboardStats, onRefresh }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {devices.map((device) => (
-              <div key={device.udid} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    {getDeviceStatusIcon(device.status)}
-                    <div>
-                      <h3 className="font-medium text-gray-900">{device.name}</h3>
-                      <p className="text-sm text-gray-500">iOS {device.ios_version}</p>
+            {devices.map((device) => {
+              const deviceQueue = deviceQueues[device.udid] || {};
+              const queueSnapshot = deviceQueue.queue_snapshot || {};
+              
+              return (
+                <div key={device.udid} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      {getDeviceStatusIcon(device.status)}
+                      <div>
+                        <h3 className="font-medium text-gray-900">{device.name}</h3>
+                        <p className="text-sm text-gray-500">iOS {device.ios_version}</p>
+                      </div>
                     </div>
+                    <span className={getDeviceStatusBadge(device.status)}>
+                      {device.status}
+                    </span>
                   </div>
-                  <span className={getDeviceStatusBadge(device.status)}>
-                    {device.status}
-                  </span>
-                </div>
 
-                <div className="space-y-2 mb-4">
-                  <div className="text-xs text-gray-500">
-                    <span className="font-medium">UDID:</span> {device.udid.substring(0, 8)}...
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    <span className="font-medium">Port:</span> {device.connection_port}
-                  </div>
-                  {device.session_id && (
+                  {/* Device Queue Information */}
+                  {queueSnapshot.queue_length !== undefined && (
+                    <div className="mb-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-blue-800">Device Queue</span>
+                        <span className="text-xs text-blue-600">
+                          {queueSnapshot.queue_length} task{queueSnapshot.queue_length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                      
+                      {queueSnapshot.current_task && (
+                        <div className="text-xs text-blue-700 mb-1">
+                          <span className="flex items-center">
+                            <PlayIcon className="h-3 w-3 mr-1 animate-pulse" />
+                            Running: {queueSnapshot.current_task.task_id?.substring(0, 8)}...
+                          </span>
+                        </div>
+                      )}
+                      
+                      {queueSnapshot.next_run_eta && (
+                        <div className="text-xs text-blue-600">
+                          Next run: {formatDistanceToNow(new Date(queueSnapshot.next_run_eta), { addSuffix: true })}
+                        </div>
+                      )}
+                      
+                      {queueSnapshot.pacing_stats && (
+                        <div className="text-xs text-blue-600 mt-1">
+                          Rate: {queueSnapshot.pacing_stats.actions_this_hour || 0}/{queueSnapshot.pacing_stats.rate_limits?.actions_per_hour || 60}/hr
+                        </div>
+                      )}
+                      
+                      {queueSnapshot.safe_mode && (
+                        <div className="text-xs text-yellow-600 mt-1 flex items-center">
+                          <ShieldExclamationIcon className="h-3 w-3 mr-1" />
+                          Safe Mode Active
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="space-y-2 mb-4">
                     <div className="text-xs text-gray-500">
-                      <span className="font-medium">Session:</span> {device.session_id.substring(0, 8)}...
+                      <span className="font-medium">UDID:</span> {device.udid.substring(0, 8)}...
                     </div>
-                  )}
-                  {device.error_message && (
-                    <div className="text-xs text-red-600">
-                      <span className="font-medium">Error:</span> {device.error_message}
+                    <div className="text-xs text-gray-500">
+                      <span className="font-medium">Port:</span> {device.connection_port}
                     </div>
-                  )}
-                </div>
+                    {device.session_id && (
+                      <div className="text-xs text-gray-500">
+                        <span className="font-medium">Session:</span> {device.session_id.substring(0, 8)}...
+                      </div>
+                    )}
+                    {device.error_message && (
+                      <div className="text-xs text-red-600">
+                        <span className="font-medium">Error:</span> {device.error_message}
+                      </div>
+                    )}
+                  </div>
 
-                <div className="flex space-x-2">
-                  {device.status === 'connected' && (
-                    <button
-                      onClick={() => handleInitializeDevice(device.udid)}
-                      disabled={initializing[device.udid]}
-                      className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <PlayIcon className="h-3 w-3 mr-1" />
-                      {initializing[device.udid] ? 'Initializing...' : 'Initialize'}
-                    </button>
-                  )}
-                  
-                  {(device.status === 'ready' || device.status === 'error') && (
-                    <button
-                      onClick={() => handleCleanupDevice(device.udid)}
-                      className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                      <StopIcon className="h-3 w-3 mr-1" />
-                      Cleanup
-                    </button>
-                  )}
+                  <div className="flex space-x-2">
+                    {device.status === 'connected' && (
+                      <button
+                        onClick={() => handleInitializeDevice(device.udid)}
+                        disabled={initializing[device.udid]}
+                        className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <PlayIcon className="h-3 w-3 mr-1" />
+                        {initializing[device.udid] ? 'Initializing...' : 'Initialize'}
+                      </button>
+                    )}
+                    
+                    {(device.status === 'ready' || device.status === 'error') && (
+                      <button
+                        onClick={() => handleCleanupDevice(device.udid)}
+                        className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                      >
+                        <StopIcon className="h-3 w-3 mr-1" />
+                        Cleanup
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
