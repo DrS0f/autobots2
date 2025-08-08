@@ -42,6 +42,16 @@ const Dashboard = () => {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [systemRunning, setSystemRunning] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // New UX state
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showGuidedTour, setShowGuidedTour] = useState(false);
+  const [showDailyWorkflow, setShowDailyWorkflow] = useState(false);
+  const [showTaskWizard, setShowTaskWizard] = useState(false);
+  const [showWorkflowWizard, setShowWorkflowWizard] = useState(false);
+  const [currentScenario, setCurrentScenario] = useState('healthy');
+  const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
 
   // Fetch dashboard stats
   const fetchDashboardStats = async () => {
